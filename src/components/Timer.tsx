@@ -2,26 +2,24 @@ import React from 'react';
 
 interface TimerProps {
   t: any;
-  eventName: string;
   eventDate1: string;
   eventDate2: string;
   timeDifference: string | null;
-  setEventName: (name: string) => void;
+  presetLabel: string | null;
   setEventDate1: (date: string) => void;
   setEventDate2: (date: string) => void;
   calculateTimeDifference: () => void;
+  calculatePreset: (key: string, t: any) => void;
 }
 
 export const Timer: React.FC<TimerProps> = ({
-  t, eventName, eventDate1, eventDate2, timeDifference,
-  setEventName, setEventDate1, setEventDate2, calculateTimeDifference
+  t, eventDate1, eventDate2, timeDifference, presetLabel,
+  setEventDate1, setEventDate2, calculateTimeDifference, calculatePreset
 }) => {
   return (
     <div className="timer-mode">
       <h2>{t.timerTitle}</h2>
-      <div className="event-input">
-        <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder={t.eventName} />
-      </div>
+
       <div className="event-input">
         <div className="input-group">
           <label>{t.startDate}</label>
@@ -33,13 +31,23 @@ export const Timer: React.FC<TimerProps> = ({
         </div>
       </div>
       <button className="add-event-btn" onClick={calculateTimeDifference}>{t.calculate}</button>
-      
+
       {timeDifference && (
         <div className="time-difference-result">
-          <h3>{t.result}:</h3>
+          <h3>{presetLabel ? `${t.untilEvent} ${presetLabel}` : t.result}:</h3>
           <p>{timeDifference}</p>
         </div>
       )}
+
+      <div className="preset-events">
+        <h3>{t.popularEvents}</h3>
+        <div className="preset-buttons">
+          <button className="preset-btn" onClick={() => calculatePreset('newYear', t)}>{t.newYear}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('christmasCatholic', t)}>{t.christmasCatholic}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('christmasOrthodox', t)}>{t.christmasOrthodox}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('halloween', t)}>{t.halloween}</button>
+        </div>
+      </div>
     </div>
   );
 };
