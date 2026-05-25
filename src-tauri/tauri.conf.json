@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Smart calc",
+  "productName": "Smart Calc",
   "version": "0.2.0",
   "identifier": "com.yarikstudio.smartcalc",
   "build": {

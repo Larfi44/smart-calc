@@ -4,7 +4,7 @@ set -e
 echo "🚀 Сборка Smart Calc APK..."
 
 # Пути
-PROJECT_DIR="/Users/Yaroslav/calculator-app"
+PROJECT_DIR="/Users/Yaroslav/Documents/Programming/Apps/calculator-app"
 APK_DIR="$PROJECT_DIR/apk"
 KEYSTORE="$APK_DIR/keystore.jks"
 STOREPASS="smartcalc123"
@@ -13,7 +13,7 @@ ALIAS="smartcalc"
 ZIPALIGN=$(find /Users/Yaroslav/Library/Android/sdk/build-tools -name "zipalign" -type f | sort -V | tail -1)
 APKSIGNER=$(find /Users/Yaroslav/Library/Android/sdk/build-tools -name "apksigner" -type f | sort -V | tail -1)
 
-echo "📦 Сборка React к..."
+echo "📦 Сборка React..."
 cd "$PROJECT_DIR"
 npm run build
 
@@ -36,7 +36,7 @@ if [ -f "$UNIVERSAL_APK" ]; then
   "$ZIPALIGN" -f -v 4 "$UNIVERSAL_APK" "$ALIGNED_APK"
   
   # Подпись v2 (для Android 7.0+)
-  SIGNED_APK="$APK_DIR/smart-calc.apk"
+  SIGNED_APK="$APK_DIR/SmartCalc.apk"
   "$APKSIGNER" sign --ks "$KEYSTORE" --ks-pass pass:"$STOREPASS" --key-pass pass:"$KEYPASS" --v2-signing-enabled true --out "$SIGNED_APK" "$ALIGNED_APK"
   
   # Проверка подписи
@@ -47,11 +47,6 @@ if [ -f "$UNIVERSAL_APK" ]; then
   rm -f "$ALIGNED_APK"
   
   echo "✅ APK: $SIGNED_APK"
-  
-  # Копируем в public/apk/ для скачивания через сайт
-  mkdir -p "$PROJECT_DIR/public/apk"
-  cp "$SIGNED_APK" "$PROJECT_DIR/public/apk/smart-calc.apk"
-  echo "📁 APK скопирован в public/apk/"
 else
   echo "❌ APK не найден"
   exit 1

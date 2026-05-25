@@ -19,21 +19,9 @@ export const Settings: React.FC<SettingsProps> = ({
   const [isTauri, setIsTauri] = useState(false);
 
   useEffect(() => {
-    // Проверяем, запущено ли приложение в Tauri
     // @ts-ignore
     setIsTauri(!!window.__TAURI__);
   }, []);
-
-  const handleDownloadApk = () => {
-    const apkPath = '/apk/smart-calc.apk';
-    const link = document.createElement('a');
-    link.href = apkPath;
-    link.download = 'smart-calc.apk';
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <div className="settings-mode">
@@ -83,9 +71,14 @@ export const Settings: React.FC<SettingsProps> = ({
 
       {!isTauri && (
         <div className="settings-section">
-          <button className="download-android-btn" onClick={handleDownloadApk}>
+          <a
+            href="https://github.com/Larfi44/smart-calc/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="download-android-btn"
+          >
             📥 {t.downloadAndroid}
-          </button>
+          </a>
         </div>
       )}
 
