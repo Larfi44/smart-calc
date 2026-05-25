@@ -35,3 +35,8 @@ Thumbs.db
 # Temporary
 *.tmp
 *.temp
+-e 
+# Build artifacts
+apk/*.apk
+apk/*.jks
+

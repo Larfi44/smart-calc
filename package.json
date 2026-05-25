@@ -14,7 +14,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "tauri": "tauri",
+    "build:apk": "bash build-apk.sh"
   },
   "eslintConfig": {
     "extends": [
@@ -34,6 +36,7 @@
     ]
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.11.2",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3"

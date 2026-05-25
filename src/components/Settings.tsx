@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Language, Theme } from '../types';
 
 interface SettingsProps {
@@ -16,6 +16,25 @@ export const Settings: React.FC<SettingsProps> = ({
   theme,
   setTheme,
 }) => {
+  const [isTauri, setIsTauri] = useState(false);
+
+  useEffect(() => {
+    // Проверяем, запущено ли приложение в Tauri
+    // @ts-ignore
+    setIsTauri(!!window.__TAURI__);
+  }, []);
+
+  const handleDownloadApk = () => {
+    const apkPath = '/apk/smart-calc.apk';
+    const link = document.createElement('a');
+    link.href = apkPath;
+    link.download = 'smart-calc.apk';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="settings-mode">
       <h2>⚙️ {t.settings}</h2>
@@ -24,16 +43,16 @@ export const Settings: React.FC<SettingsProps> = ({
         <h3>{t.language}</h3>
         <div className="language-selector">
           <button
-            className={`lang-btn ${language === 'ru' ? 'active' : ''}`}
-            onClick={() => setLanguage('ru')}
-          >
-            🇷🇺 {t.russian}
-          </button>
-          <button
             className={`lang-btn ${language === 'en' ? 'active' : ''}`}
             onClick={() => setLanguage('en')}
           >
             🇬🇧 {t.english}
+          </button>
+          <button
+            className={`lang-btn ${language === 'ru' ? 'active' : ''}`}
+            onClick={() => setLanguage('ru')}
+          >
+            🇷🇺 {t.russian}
           </button>
         </div>
       </div>
@@ -61,6 +80,14 @@ export const Settings: React.FC<SettingsProps> = ({
           </button>
         </div>
       </div>
+
+      {!isTauri && (
+        <div className="settings-section">
+          <button className="download-android-btn" onClick={handleDownloadApk}>
+            📥 {t.downloadAndroid}
+          </button>
+        </div>
+      )}
 
       <div className="settings-footer-centered">
         <p className="dev-by">

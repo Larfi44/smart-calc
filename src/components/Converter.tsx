@@ -50,6 +50,11 @@ export const Converter: React.FC<ConverterProps> = (props) => {
     label: getUnitName(u),
   }));
 
+  const handleSwap = () => {
+    setFromUnit(toUnit);
+    setToUnit(fromUnit);
+  };
+
   return (
     <div className="converter-mode">
       <h2>{t.converterTitle}</h2>
@@ -117,6 +122,11 @@ export const Converter: React.FC<ConverterProps> = (props) => {
             options={fromOptions}
           />
         </div>
+        <div className="swap-container">
+          <button className="swap-btn" onClick={handleSwap} title={t.swap}>
+            ⇄
+          </button>
+        </div>
         <div className="input-group">
           <label>{t.to}</label>
           <CustomSelect
@@ -130,6 +140,8 @@ export const Converter: React.FC<ConverterProps> = (props) => {
       <button className="convert-btn" onClick={convertUnits}>
         {t.convert}
       </button>
+
+      {convertResult === null && <div className="convert-spacer" />}
 
       {convertResult !== null && (
         <div className="conversion-result">

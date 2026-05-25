@@ -17,8 +17,8 @@ export const useConverter = () => {
   const timeUnits = ['seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
   const temperatureUnits = ['celsius', 'fahrenheit', 'kelvin'];
   const speedUnits = ['ms', 'kmh', 'mph', 'knots', 'mpm'];
-  const areaUnits = ['m2', 'km2', 'hectares', 'acres', 'ft2', 'in2'];
-  const volumeUnits = ['liters', 'milliliters', 'gallons', 'quarts', 'pints', 'm3', 'cm3'];
+  const areaUnits = ['m2', 'km2', 'hectares', 'acres', 'ft2', 'in2', 'mi2'];
+  const volumeUnits = ['liters', 'milliliters', 'gallons', 'quarts', 'pints', 'm3', 'cm3', 'km3', 'in3', 'ft3', 'mi3'];
 
   const units: UnitMap = {
     length: lengthUnits,
@@ -36,11 +36,12 @@ export const useConverter = () => {
     kilograms: 1, grams: 0.001, pounds: 0.453592, ounces: 0.0283495, tonnes: 1000,
     seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800, months: 2628000, years: 31536000,
     ms: 1, kmh: 0.277778, mph: 0.44704, knots: 0.514444, mpm: 0.016667,
-    m2: 1, km2: 1000000, hectares: 10000, acres: 4046.86, ft2: 0.092903, in2: 0.00064516,
-    liters: 1, milliliters: 0.001, gallons: 3.78541, quarts: 0.946353, pints: 0.473176, m3: 1000, cm3: 0.001
+    m2: 1, km2: 1000000, hectares: 10000, acres: 4046.86, ft2: 0.092903, in2: 0.00064516, mi2: 2589988.11,
+    liters: 1, milliliters: 0.001, gallons: 3.78541, quarts: 0.946353, pints: 0.473176, m3: 1000, cm3: 0.001,
+    km3: 1e12, in3: 0.0163871, ft3: 28.3168, mi3: 4168181825.44
   };
 
-  const convertTemperature = (value: number, from: string, to: string): number => {
+  const conversionTemperature = (value: number, from: string, to: string): number => {
     let celsius: number;
     if (from === 'celsius') celsius = value;
     else if (from === 'fahrenheit') celsius = (value - 32) * 5/9;
@@ -59,7 +60,7 @@ export const useConverter = () => {
     let result: number;
 
     if (converterType === 'temperature') {
-      result = convertTemperature(value, fromUnit, toUnit);
+      result = conversionTemperature(value, fromUnit, toUnit);
     } else {
       const fromRate = conversionRates[fromUnit];
       const toRate = conversionRates[toUnit];

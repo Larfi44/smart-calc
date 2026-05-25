@@ -177,6 +177,17 @@ export const useCalculator = (t: any) => {
   const handleFunction = useCallback(
     (func: string, param?: number) => {
       try {
+        // Special case: negate just toggles sign without calculating
+        if (func === 'negate') {
+          if (display === '0' || display === t.error || display === t.infinity) return;
+          if (display.startsWith('-')) {
+            setDisplay(display.slice(1));
+          } else {
+            setDisplay('-' + display);
+          }
+          return;
+        }
+
         const num = parseFloat(display);
         let result = 0;
         let formattedExp = '';
@@ -249,10 +260,6 @@ export const useCalculator = (t: any) => {
           case 'percentOf':
             result = ((param || num) * num) / 100;
             formattedExp = `${num}% от ${param || num}`;
-            break;
-          case 'negate':
-            result = -num;
-            formattedExp = `-${num}`;
             break;
           case 'xor':
             result = parseInt(display) ^ 2;

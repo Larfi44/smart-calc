@@ -1,26 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 interface CustomSelectProps {
   value: string;
   onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  label?: string;
+  options: Option[];
 }
 
-export const CustomSelect: React.FC<CustomSelectProps> = ({ value, onChange, options, label }) => {
+export const CustomSelect: React.FC<CustomSelectProps> = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const selectedLabel = options.find(o => o.value === value)?.label || value;
-  
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find(opt => opt.value === value);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <div className="custom-select">
-      {label && <label>{label}</label>}
+    <div className="custom-select" ref={containerRef}>
       <div className="select-trigger" onClick={() => setIsOpen(!isOpen)}>
-        <span className="select-value">{selectedLabel}</span>
+        <span className="select-value">{selectedOption?.label || value}</span>
         <span className={`select-arrow ${isOpen ? 'open' : ''}`}>▼</span>
       </div>
       {isOpen && (
         <div className="select-options">
-          {options.map(option => (
+          {options.map((option) => (
             <div
               key={option.value}
               className={`select-option ${option.value === value ? 'selected' : ''}`}
