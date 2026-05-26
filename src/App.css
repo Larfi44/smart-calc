@@ -1055,3 +1055,14 @@ body {
 .convert-spacer {
   height: 120px;
 }
+
+/* Убираем синюю подсветку при нажатии на Android */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+button, a, input, select, .btn, .func-btn, .lang-btn, .type-btn, .preset-btn, .swap-btn, .convert-btn {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}

@@ -9,7 +9,7 @@ interface TimerProps {
   setEventDate1: (date: string) => void;
   setEventDate2: (date: string) => void;
   calculateTimeDifference: () => void;
-  calculatePreset: (key: string, t: any) => void;
+  calculatePreset: (key: string) => void;
 }
 
 export const Timer: React.FC<TimerProps> = ({
@@ -42,10 +42,10 @@ export const Timer: React.FC<TimerProps> = ({
       <div className="preset-events">
         <h3>{t.popularEvents}</h3>
         <div className="preset-buttons">
-          <button className="preset-btn" onClick={() => calculatePreset('newYear', t)}>{t.newYear}</button>
-          <button className="preset-btn" onClick={() => calculatePreset('christmasCatholic', t)}>{t.christmasCatholic}</button>
-          <button className="preset-btn" onClick={() => calculatePreset('christmasOrthodox', t)}>{t.christmasOrthodox}</button>
-          <button className="preset-btn" onClick={() => calculatePreset('halloween', t)}>{t.halloween}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('newYear')}>{t.newYear}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('christmasCatholic')}>{t.christmasCatholic}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('christmasOrthodox')}>{t.christmasOrthodox}</button>
+          <button className="preset-btn" onClick={() => calculatePreset('halloween')}>{t.halloween}</button>
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ const presetEvents: Record<string, PresetEvent> = {
   halloween: { name: 'halloween', month: 9, day: 31 },
 };
 
-export const useTimer = () => {
+export const useTimer = (t: any) => {
   const [eventDate1, setEventDate1] = useState('');
   const [eventDate2, setEventDate2] = useState('');
   const [timeDifference, setTimeDifference] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export const useTimer = () => {
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    return `${days}д ${hours}ч ${minutes}м ${seconds}с`;
+    return `${days}${t.daysShort} ${hours}${t.hoursShort} ${minutes}${t.minutesShort} ${seconds}${t.secondsShort}`;
   };
 
   const calculateTimeDifference = useCallback(() => {
@@ -34,9 +34,9 @@ export const useTimer = () => {
     const diff = Math.abs(date2 - date1);
     setTimeDifference(formatDiff(diff));
     setPresetLabel(null);
-  }, [eventDate1, eventDate2]);
+  }, [eventDate1, eventDate2, t]);
 
-  const calculatePreset = useCallback((key: string, t: any) => {
+  const calculatePreset = useCallback((key: string) => {
     const preset = presetEvents[key];
     if (!preset) return;
 
@@ -50,7 +50,7 @@ export const useTimer = () => {
     const diff = target.getTime() - now.getTime();
     setTimeDifference(formatDiff(diff));
     setPresetLabel(t[preset.name] || key);
-  }, []);
+  }, [t]);
 
   return {
     eventDate1, eventDate2, timeDifference, presetLabel,

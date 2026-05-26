@@ -31,7 +31,7 @@ const App: React.FC = () => {
   const calc = useCalculator(t);
   const converter = useConverter();
   const currency = useCurrency(language);
-  const timer = useTimer();
+  const timer = useTimer(t);
 
   const menuItems: MenuItem[] = [
     { id: 'calculator', icon: '🔢', label: t.calculator },

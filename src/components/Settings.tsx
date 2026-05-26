@@ -19,8 +19,17 @@ export const Settings: React.FC<SettingsProps> = ({
   const [isTauri, setIsTauri] = useState(false);
 
   useEffect(() => {
-    // @ts-ignore
-    setIsTauri(!!window.__TAURI__);
+    const checkTauri = () => {
+      // @ts-ignore
+      const hasTauri = !!(window.__TAURI__ || window.__TAURI_INTERNALS__);
+      setIsTauri(hasTauri);
+    };
+
+    checkTauri();
+
+    // Проверяем снова через небольшую задержку, так как Tauri может загружаться асинхронно
+    const timer = setTimeout(checkTauri, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (

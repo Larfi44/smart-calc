@@ -14,7 +14,7 @@ export const useConverter = () => {
 
   const lengthUnits = ['meters', 'kilometers', 'centimeters', 'millimeters', 'miles', 'yards', 'feet', 'inches'];
   const weightUnits = ['kilograms', 'grams', 'pounds', 'ounces', 'tonnes'];
-  const timeUnits = ['seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
+  const timeUnits = ['milliseconds', 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
   const temperatureUnits = ['celsius', 'fahrenheit', 'kelvin'];
   const speedUnits = ['ms', 'kmh', 'mph', 'knots', 'mpm'];
   const areaUnits = ['m2', 'km2', 'hectares', 'acres', 'ft2', 'in2', 'mi2'];
@@ -34,7 +34,7 @@ export const useConverter = () => {
     meters: 1, kilometers: 1000, centimeters: 0.01, millimeters: 0.001,
     miles: 1609.34, yards: 0.9144, feet: 0.3048, inches: 0.0254,
     kilograms: 1, grams: 0.001, pounds: 0.453592, ounces: 0.0283495, tonnes: 1000,
-    seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800, months: 2628000, years: 31536000,
+    milliseconds: 0.001, seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800, months: 2628000, years: 31536000,
     ms: 1, kmh: 0.277778, mph: 0.44704, knots: 0.514444, mpm: 0.016667,
     m2: 1, km2: 1000000, hectares: 10000, acres: 4046.86, ft2: 0.092903, in2: 0.00064516, mi2: 2589988.11,
     liters: 1, milliliters: 0.001, gallons: 3.78541, quarts: 0.946353, pints: 0.473176, m3: 1000, cm3: 0.001,
