@@ -18,6 +18,22 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   const [isTauri, setIsTauri] = useState(false);
 
+  const handleExternalLink = async (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    url: string,
+  ) => {
+    if (isTauri) {
+      e.preventDefault();
+      try {
+        const { openUrl } = await import('@tauri-apps/plugin-opener');
+        await openUrl(url);
+      } catch (err) {
+        console.error('Failed to open URL:', err);
+        window.open(url, '_blank');
+      }
+    }
+  };
+
   useEffect(() => {
     const checkTauri = () => {
       // @ts-ignore
@@ -98,6 +114,12 @@ export const Settings: React.FC<SettingsProps> = ({
             href="https://larfi44.github.io/Yarik-Studio.github.io/index.html"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) =>
+              handleExternalLink(
+                e,
+                'https://larfi44.github.io/Yarik-Studio.github.io/index.html',
+              )
+            }
           >
             Yarik Studio
           </a>
@@ -108,6 +130,9 @@ export const Settings: React.FC<SettingsProps> = ({
           href="https://pay.cloudtips.ru/p/b94e349b"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) =>
+            handleExternalLink(e, 'https://pay.cloudtips.ru/p/b94e349b')
+          }
         >
           {t.donate}
         </a>
