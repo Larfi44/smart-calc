@@ -155,8 +155,112 @@ export const useCalculator = (t: any) => {
         setShouldResetDisplay(true);
         return;
       }
-      
+
       const fullEquation = equation + display;
+
+      // % от — процент от числа: 9 %of 50 = 4.5
+      if (equation.includes('%of')) {
+        const a = parseFloat(equation.replace('%of', '').trim());
+        const b = parseFloat(display);
+        const result = (a * b) / 100;
+        const historyItem: HistoryItem = {
+          expression: `${a} %of ${b}`,
+          result: formatDisplayNumber(result),
+          formattedExpression: `${a}% от ${b}`,
+        };
+        setHistory([historyItem, ...history].slice(0, 10));
+        setDisplay(formatDisplayNumber(result));
+        setEquation('');
+        setShouldResetDisplay(true);
+        return;
+      }
+
+      // AND — битовое И: 8 AND 2 = 0
+      if (equation.includes('AND')) {
+        const a = parseInt(equation.replace('AND', '').trim());
+        const b = parseInt(display);
+        const result = a & b;
+        const historyItem: HistoryItem = {
+          expression: `${a} AND ${b}`,
+          result: formatDisplayNumber(result),
+          formattedExpression: `${a} AND ${b}`,
+        };
+        setHistory([historyItem, ...history].slice(0, 10));
+        setDisplay(formatDisplayNumber(result));
+        setEquation('');
+        setShouldResetDisplay(true);
+        return;
+      }
+
+      // OR — битовое ИЛИ: 8 OR 2 = 10
+      if (equation.includes('OR') && !equation.includes('XOR')) {
+        const a = parseInt(equation.replace('OR', '').trim());
+        const b = parseInt(display);
+        const result = a | b;
+        const historyItem: HistoryItem = {
+          expression: `${a} OR ${b}`,
+          result: formatDisplayNumber(result),
+          formattedExpression: `${a} OR ${b}`,
+        };
+        setHistory([historyItem, ...history].slice(0, 10));
+        setDisplay(formatDisplayNumber(result));
+        setEquation('');
+        setShouldResetDisplay(true);
+        return;
+      }
+
+      // XOR — битовое исключающее ИЛИ: 8 XOR 2 = 10
+      if (equation.includes('XOR')) {
+        const a = parseInt(equation.replace('XOR', '').trim());
+        const b = parseInt(display);
+        const result = a ^ b;
+        const historyItem: HistoryItem = {
+          expression: `${a} XOR ${b}`,
+          result: formatDisplayNumber(result),
+          formattedExpression: `${a} XOR ${b}`,
+        };
+        setHistory([historyItem, ...history].slice(0, 10));
+        setDisplay(formatDisplayNumber(result));
+        setEquation('');
+        setShouldResetDisplay(true);
+        return;
+      }
+
+      // mod — остаток от деления: 9 mod 2 = 1
+      if (equation.includes('mod')) {
+        const a = parseFloat(equation.replace('mod', '').trim());
+        const b = parseFloat(display);
+        const result = a % b;
+        const historyItem: HistoryItem = {
+          expression: `${a} mod ${b}`,
+          result: formatDisplayNumber(result),
+          formattedExpression: `${a} mod ${b}`,
+        };
+        setHistory([historyItem, ...history].slice(0, 10));
+        setDisplay(formatDisplayNumber(result));
+        setEquation('');
+        setShouldResetDisplay(true);
+        return;
+      }
+
+      // mod — остаток от деления: 9 mod 2 = 1
+      if (equation.includes('mod')) {
+        const a = parseFloat(equation.replace('mod', '').trim());
+        const b = parseFloat(display);
+        const result = a % b;
+        const historyItem: HistoryItem = {
+          expression: `${a} mod ${b}`,
+          result: formatDisplayNumber(result),
+          formattedExpression: `${a} mod ${b}`,
+        };
+        setHistory([historyItem, ...history].slice(0, 10));
+        setDisplay(formatDisplayNumber(result));
+        setEquation('');
+        setShouldResetDisplay(true);
+        return;
+      }
+
+      // Стандартные операции через eval
       const result = eval(fullEquation.replace(/×/g, '*').replace(/÷/g, '/'));
 
       const historyItem: HistoryItem = {
@@ -177,7 +281,7 @@ export const useCalculator = (t: any) => {
   const handleFunction = useCallback(
     (func: string, param?: number) => {
       try {
-        // Special case: negate just toggles sign without calculating
+        // negate — переключение знака без вычисления
         if (func === 'negate') {
           if (display === '0' || display === t.error || display === t.infinity) return;
           if (display.startsWith('-')) {
@@ -257,21 +361,13 @@ export const useCalculator = (t: any) => {
             result = num / 100;
             formattedExp = `${num}%`;
             break;
-          case 'percentOf':
-            result = ((param || num) * num) / 100;
-            formattedExp = `${num}% от ${param || num}`;
+          case 'round':
+            result = Math.round(num);
+            formattedExp = `round(${num})`;
             break;
-          case 'xor':
-            result = parseInt(display) ^ 2;
-            formattedExp = `${display} XOR 2`;
-            break;
-          case 'and':
-            result = parseInt(display) & 2;
-            formattedExp = `${display} AND 2`;
-            break;
-          case 'or':
-            result = parseInt(display) | 2;
-            formattedExp = `${display} OR 2`;
+          case 'pow10':
+            result = Math.pow(10, num);
+            formattedExp = `10^${num}`;
             break;
           case 'not':
             result = ~parseInt(display);
