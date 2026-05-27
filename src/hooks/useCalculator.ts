@@ -75,7 +75,10 @@ export const useCalculator = (t: any) => {
       if (display === '0' || display === t.error || display === t.infinity) {
         setDisplay(num);
       } else {
-        setDisplay(display + num);
+        // Implicit multiplication: π8 → π×8, e8 → e×8, )8 → )×8
+        const lastChar = display.slice(-1);
+        const needsMultiply = /[πe)]/.test(lastChar);
+        setDisplay(display + (needsMultiply ? '×' : '') + num);
       }
     },
     [display, justEvaluated, nthRootMode, nthPowerMode, t],
@@ -85,6 +88,27 @@ export const useCalculator = (t: any) => {
     (op: string) => {
       if (nthRootMode || nthPowerMode) return;
       if (display === t.error || display === t.infinity) return;
+
+      // Parentheses — no spaces around them
+      if (op === '(' || op === ')') {
+        if (justEvaluated) {
+          setDisplay(op);
+          setEquation('');
+          setJustEvaluated(false);
+          return;
+        }
+        if (display === '0') {
+          setDisplay(op);
+        } else {
+          // Implicit multiplication before opening parenthesis: 8( → 8×(
+          if (op === '(' && /[\dπe)]/.test(display.slice(-1))) {
+            setDisplay(display + '×' + op);
+          } else {
+            setDisplay(display + op);
+          }
+        }
+        return;
+      }
 
       if (justEvaluated) {
         setDisplay(display + ' ' + op + ' ');
@@ -427,7 +451,10 @@ export const useCalculator = (t: any) => {
               setDisplay('π');
               setJustEvaluated(false);
             } else {
-              setDisplay(display + 'π');
+              // Implicit multiplication: 8π → 8×π, )π → )×π
+              const lastChar = display.slice(-1);
+              const needsMultiply = /[\d)πe]/.test(lastChar);
+              setDisplay(display + (needsMultiply ? '×' : '') + 'π');
             }
             return;
           case 'e':
@@ -435,7 +462,10 @@ export const useCalculator = (t: any) => {
               setDisplay('e');
               setJustEvaluated(false);
             } else {
-              setDisplay(display + 'e');
+              // Implicit multiplication: 8e → 8×e, )e → )×e
+              const lastChar = display.slice(-1);
+              const needsMultiply = /[\d)πe]/.test(lastChar);
+              setDisplay(display + (needsMultiply ? '×' : '') + 'e');
             }
             return;
           case 'abs':

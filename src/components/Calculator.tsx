@@ -228,9 +228,9 @@ export const Calculator: React.FC<CalculatorProps> = ({
               </button>
               <button
                 className="func-btn"
-                onClick={() => handleFunction('pow10')}
+                onClick={() => handleOperator('mod')}
               >
-                10ˣ
+                mod
               </button>
             </div>
           </>
@@ -336,10 +336,16 @@ export const Calculator: React.FC<CalculatorProps> = ({
             ⌫
           </button>
           <button
-            className="btn btn-percent"
-            onClick={() => handleOperator('mod')}
+            className="btn btn-operator"
+            onClick={() => handleOperator('(')}
           >
-            mod
+            (
+          </button>
+          <button
+            className="btn btn-operator"
+            onClick={() => handleOperator(')')}
+          >
+            )
           </button>
           <button
             className="btn btn-operator"

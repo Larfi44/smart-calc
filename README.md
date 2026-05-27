@@ -1,24 +1,34 @@
 # 🧮 Smart Calculator
 
-Multi-functional calculator with **Tauri v2** Android build, including calculator, converter, timer, currency exchange, and settings.
+Multi-functional calculator with with site and **Tauri v2** Android build, including calculator,
+converter, timer, currency exchange, and settings.
+
+Site: https://larfi44.github.io/smart-calc/
 
 ## ✨ Features
 
 ### 🧮 Calculator
-- **Normal mode**: +, −, ×, ÷, √, x², π, e, n!, mod (remainder)
-- **Scientific mode**: sin, cos, tan, ctg, log, ln, asin, acos, atan, atg, π, e, x!, |x|, 1/x, % of, 10ˣ
-- **Programmer mode**: DEC, BIN, OCT, HEX + AND, OR, XOR, NOT, <<, >>
+
+- **Normal mode**: +, −, ×, ÷, mod (remainder), √, x², π, e, rnd (round),
+- **Scientific mode**: sin, cos, tan, ctg, log, ln, asin, acos, atan, atg, π, e, x!, |x|, 1/x, % of,
+  factorial, module and so on
+- **Programmer mode**: +, -, ×, ÷, mod (remainder), Accounting systems (DEC, BIN, OCT, HEX), binary
+  operations (AND, OR, XOR, NOT, <<, >>)
 
 ### 🔄 Converter
+
 Unit converter for: length, weight, time, temperature, speed, area, volume.
 
 ### ⏰ Timer
+
 Countdown to special dates: New Year, Christmas (Catholic/Orthodox), Halloween.
 
 ### 💱 Currency
+
 15 currencies with offline fallback rates and swap functionality.
 
 ### ⚙️ Settings
+
 - **Language**: English / Русский (auto-detect)
 - **Theme**: ☀️ Light / 🌙 Dark / 🔄 Auto (system preference)
 - **Android download**: Available for web users only (hidden in Tauri app)
@@ -28,7 +38,7 @@ Countdown to special dates: New Year, Christmas (Catholic/Orthodox), Halloween.
 ```bash
 cd calculator-app
 npm install
-npm start
+npm run start
 ```
 
 ## 📦 Build for Production
@@ -52,6 +62,7 @@ bash build-apk.sh
 Output: `apk/SmartCalc.apk` (~32 MB)
 
 ### Prerequisites
+
 - Android SDK with NDK 25.2.9519653
 - Java Development Kit (JDK)
 - Keystore at `apk/keystore.jks` (password: `smartcalc123`)
@@ -92,22 +103,29 @@ calculator-app/
 
 ## 🧮 Calculator Logic
 
-| Mode | Special Features |
-|------|-----------------|
-| Normal | π and e insert as symbols (evaluate on =), mod = remainder |
-| Scientific | % of = percentage calculation, 10ˣ, trigonometric functions in degrees |
-| Programmer | Bitwise operators as binary (AND, OR, XOR), NOT unary, base highlighting |
+Normal: +, -, \*, :, √, x², π and e insert as symbols (evaluate on =) and mod (counts remainder)
+Scientific: Everything is as normal mode, but also trigonometric functions in degrees, % of =
+percentage calculation 10ˣ\
+Programmer: +, -, \*, :, Bitwise operators as binary (AND, OR, XOR), NOT unary, unit systems (DEC,
+BIN, OCT and HEX)
 
 ## 👨‍💻 Author
 
-**Yarik Studio**
+Yaroslav Krasulya from **Yarik Studio** - https://larfi44.github.io/Yarik-Studio.github.io/
+
+## ❤️ Donate
+
+If you like my work, please consider donating to support the development:
+https://pay.cloudtips.ru/p/b94e349b
 
 ## 📄 License
 
-MIT
+MIT – Allows anyone to use, copy, modify, merge, publish, distribute, sublicense, and sell this
+software. The only requirement is that anyone who shares or uses the code must keep the original
+copyright notice (Yaroslav Krasulya from Yarik Studio) and the full MIT license text inside the
+files or documentation.
 
-## 🙏 Acknowledgments
+## ! Acknowledgments
 
-- **Tauri**: Cross-platform desktop & mobile framework
 - **React**: UI library
-- **GitHub Actions**: CI/CD (optional)
+- **Tauri**: Cross-platform desktop & mobile framework
