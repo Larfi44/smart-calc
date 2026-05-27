@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Сборка Smart Calc APK..."
+echo "🚀 Building Smart Calc APK..."
 
 PROJECT_DIR="/Users/Yaroslav/Documents/Programming/Apps/calculator-app"
 APK_DIR="$PROJECT_DIR/apk"
@@ -14,29 +14,29 @@ APKSIGNER=$(find /Users/Yaroslav/Library/Android/sdk/build-tools -name "apksigne
 
 cd "$PROJECT_DIR"
 
-# Сохраняем homepage
+# Save homepage from package.json
 HOMEPAGE_BACKUP=$(node -p "require('./package.json').homepage" 2>/dev/null || echo "")
 
-# Удаляем homepage для правильной сборки
+# Remove homepage for correct asset paths
 if [ -n "$HOMEPAGE_BACKUP" ]; then
-  echo "📝 Временно убираем homepage..."
+  echo "📝 Temporarily removing homepage..."
   node -e "const p=require('./package.json'); delete p.homepage; require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2))"
 fi
 
-echo "🧹 Удаляем старую сборку..."
+echo "🧹 Cleaning old build..."
 rm -rf build
 
-echo "📦 Сборка React..."
+echo "📦 Building React app..."
 npm run build
 
-echo "🤖 Сборка Android APK..."
+echo "🤖 Building Android APK..."
 export NDK_HOME="/Users/Yaroslav/Library/Android/sdk/ndk/25.2.9519653"
 npx tauri android build --apk
 
 BUILD_DIR="$PROJECT_DIR/src-tauri/gen/android/app/build/outputs/apk"
 UNIVERSAL_APK="$BUILD_DIR/universal/release/app-universal-release-unsigned.apk"
 
-echo "🔐 Подпись APK..."
+echo "🔐 Signing APK..."
 
 if [ -f "$UNIVERSAL_APK" ]; then
   rm -f "$APK_DIR"/*.apk
@@ -48,16 +48,16 @@ if [ -f "$UNIVERSAL_APK" ]; then
   rm -f "$ALIGNED_APK"
   echo "✅ APK: $SIGNED_APK"
 else
-  echo "❌ APK не найден"
+  echo "❌ APK not found"
   exit 1
 fi
 
-# Восстанавливаем homepage ПОСЛЕ всей сборки
+# Restore homepage after build
 if [ -n "$HOMEPAGE_BACKUP" ]; then
-  echo "📝 Восстанавливаем homepage..."
+  echo "📝 Restoring homepage..."
   node -e "const p=require('./package.json'); p.homepage='$HOMEPAGE_BACKUP'; require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2))"
 fi
 
 echo ""
-echo "🎉 Готово!"
+echo "🎉 Done!"
 ls -lh "$APK_DIR"/*.apk
