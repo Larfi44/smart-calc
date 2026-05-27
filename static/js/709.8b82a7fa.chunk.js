@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkcalculator_app=self.webpackChunkcalculator_app||[]).push([[709],{709(e,n,a){a.d(n,{openUrl:()=>o}),"function"===typeof SuppressedError&&SuppressedError;const p="__TAURI_TO_IPC_KEY__";new WeakMap,new WeakMap,new WeakMap,new WeakMap;async function r(e){let n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},a=arguments.length>2?arguments[2]:void 0;return window.__TAURI_INTERNALS__.invoke(e,n,a)}async function o(e,n){await r("plugin:opener|open_url",{url:e,with:n})}new WeakMap}}]);
+//# sourceMappingURL=709.8b82a7fa.chunk.js.map
