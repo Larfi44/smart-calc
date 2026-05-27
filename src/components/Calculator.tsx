@@ -120,70 +120,15 @@ export const Calculator: React.FC<CalculatorProps> = ({
             <div className="function-row">
               <button
                 className="func-btn"
-                onClick={() => handleFunction('sqrt')}
-              >
-                √
-              </button>
-              <button className="func-btn" onClick={handleNthRoot}>
-                √[y]
-              </button>
-              <button
-                className="func-btn"
                 onClick={() => handleFunction('square')}
               >
                 x²
               </button>
-              <button className="func-btn" onClick={handleNthPower}>
-                xʸ
-              </button>
               <button
                 className="func-btn"
-                onClick={() => handleFunction('sin')}
+                onClick={() => handleFunction('sqrt')}
               >
-                sin
-              </button>
-            </div>
-            <div className="function-row">
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('cos')}
-              >
-                cos
-              </button>
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('tan')}
-              >
-                tan
-              </button>
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('log')}
-              >
-                log
-              </button>
-              <button className="func-btn" onClick={() => handleFunction('ln')}>
-                ln
-              </button>
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('asin')}
-              >
-                asin
-              </button>
-            </div>
-            <div className="function-row">
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('acos')}
-              >
-                acos
-              </button>
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('atan')}
-              >
-                atan
+                √
               </button>
               <button className="func-btn" onClick={() => handleFunction('pi')}>
                 π
@@ -193,23 +138,87 @@ export const Calculator: React.FC<CalculatorProps> = ({
               </button>
               <button
                 className="func-btn"
-                onClick={() => handleFunction('fact')}
+                onClick={() => handleFunction('round')}
               >
-                n!
+                rnd
               </button>
             </div>
             <div className="function-row">
               <button
                 className="func-btn"
-                onClick={() => handleFunction('reciprocal')}
+                onClick={() => handleFunction('sin')}
               >
-                1/x
+                sin
               </button>
               <button
                 className="func-btn"
-                onClick={() => handleFunction('abs')}
+                onClick={() => handleFunction('cos')}
+              >
+                cos
+              </button>
+              <button className="func-btn" onClick={() => handleFunction('tg')}>
+                tg
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('ctg')}
+              >
+                ctg
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('log')}
+              >
+                log
+              </button>
+            </div>
+            <div className="function-row">
+              <button className="func-btn" onClick={() => handleFunction('ln')}>
+                ln
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('asin')}
+              >
+                asin
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('acos')}
+              >
+                acos
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('atg')}
+              >
+                atg
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('actg')}
+              >
+                actg
+              </button>
+            </div>
+            <div className="function-row">
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('fact')}
+              >
+                x!
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('mod')}
               >
                 |x|
+              </button>
+              <button
+                className="func-btn"
+                onClick={() => handleFunction('reciprocal')}
+              >
+                1/x
               </button>
               <button
                 className="func-btn"
@@ -222,12 +231,6 @@ export const Calculator: React.FC<CalculatorProps> = ({
                 onClick={() => handleFunction('pow10')}
               >
                 10ˣ
-              </button>
-              <button
-                className="func-btn"
-                onClick={() => handleFunction('round')}
-              >
-                rnd
               </button>
             </div>
           </>
@@ -301,14 +304,14 @@ export const Calculator: React.FC<CalculatorProps> = ({
 
         {calcType === 'normal' && (
           <div className="function-row">
-            <button className="func-btn" onClick={() => handleFunction('sqrt')}>
-              √
-            </button>
             <button
               className="func-btn"
               onClick={() => handleFunction('square')}
             >
               x²
+            </button>
+            <button className="func-btn" onClick={() => handleFunction('sqrt')}>
+              √
             </button>
             <button className="func-btn" onClick={() => handleFunction('pi')}>
               π
@@ -316,8 +319,11 @@ export const Calculator: React.FC<CalculatorProps> = ({
             <button className="func-btn" onClick={() => handleFunction('e')}>
               e
             </button>
-            <button className="func-btn" onClick={() => handleFunction('fact')}>
-              n!
+            <button
+              className="func-btn"
+              onClick={() => handleFunction('round')}
+            >
+              rnd
             </button>
           </div>
         )}

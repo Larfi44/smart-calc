@@ -42,8 +42,6 @@ export const Settings: React.FC<SettingsProps> = ({
     };
 
     checkTauri();
-
-    // Проверяем снова через небольшую задержку, так как Tauri может загружаться асинхронно
     const timer = setTimeout(checkTauri, 500);
     return () => clearTimeout(timer);
   }, []);
@@ -95,7 +93,7 @@ export const Settings: React.FC<SettingsProps> = ({
       </div>
 
       {!isTauri && (
-        <div className="settings-section">
+        <div className="settings-section download-section">
           <a
             href="https://github.com/Larfi44/smart-calc/releases"
             target="_blank"
