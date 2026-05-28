@@ -45,14 +45,10 @@ export const useCalculator = (t: any) => {
   const formatNumberInBase = useCallback(
     (num: number, base: NumberBase): string => {
       switch (base) {
-        case 'bin':
-          return num.toString(2);
-        case 'oct':
-          return num.toString(8);
-        case 'hex':
-          return num.toString(16).toUpperCase();
-        default:
-          return num.toString(10);
+        case 'bin': return num.toString(2);
+        case 'oct': return num.toString(8);
+        case 'hex': return num.toString(16).toUpperCase();
+        default: return num.toString(10);
       }
     },
     [],
@@ -75,10 +71,17 @@ export const useCalculator = (t: any) => {
       if (display === '0' || display === t.error || display === t.infinity) {
         setDisplay(num);
       } else {
-        // Implicit multiplication: π8 → π×8, e8 → e×8, )8 → )×8
-        const lastChar = display.slice(-1);
-        const needsMultiply = /[πe)]/.test(lastChar);
-        setDisplay(display + (needsMultiply ? '×' : '') + num);
+        const trimmed = display.trimEnd();
+        const endsWithOperator = /[+\-×÷\s]$/.test(trimmed) || /(AND|OR|XOR|mod)\s*$/.test(trimmed);
+        
+        if (endsWithOperator) {
+          const base = trimmed.replace(/\s+[+\-×÷]\s*$/, '').replace(/\s+(AND|OR|XOR|mod)\s*$/, '');
+          setDisplay(base + ' ' + num);
+        } else {
+          const lastChar = display.slice(-1);
+          const needsMultiply = /[πe)]/.test(lastChar);
+          setDisplay(display + (needsMultiply ? '×' : '') + num);
+        }
       }
     },
     [display, justEvaluated, nthRootMode, nthPowerMode, t],
@@ -89,7 +92,6 @@ export const useCalculator = (t: any) => {
       if (nthRootMode || nthPowerMode) return;
       if (display === t.error || display === t.infinity) return;
 
-      // Parentheses — no spaces around them
       if (op === '(' || op === ')') {
         if (justEvaluated) {
           setDisplay(op);
@@ -100,13 +102,28 @@ export const useCalculator = (t: any) => {
         if (display === '0') {
           setDisplay(op);
         } else {
-          // Implicit multiplication before opening parenthesis: 8( → 8×(
           if (op === '(' && /[\dπe)]/.test(display.slice(-1))) {
             setDisplay(display + '×' + op);
           } else {
             setDisplay(display + op);
           }
         }
+        return;
+      }
+
+      if (op === 'AND' || op === 'OR' || op === 'XOR') {
+        if (justEvaluated) {
+          setDisplay(display + ' ' + op + ' ');
+          setEquation('');
+          setJustEvaluated(false);
+          return;
+        }
+        const trimmed = display.trimEnd();
+        if (/[+\-×÷\s]*$/.test(trimmed)) {
+          setDisplay(trimmed.slice(0, -1).trimEnd() + ' ' + op + ' ');
+          return;
+        }
+        setDisplay(display + ' ' + op + ' ');
         return;
       }
 
@@ -146,11 +163,7 @@ export const useCalculator = (t: any) => {
     const parts = display.split(/[+\-×÷]\s*/);
     const lastPart = parts[parts.length - 1];
 
-    if (
-      !lastPart.includes('.') &&
-      !lastPart.includes('π') &&
-      !lastPart.includes('e')
-    ) {
+    if (!lastPart.includes('.') && !lastPart.includes('π') && !lastPart.includes('e')) {
       setDisplay(display + '.');
     }
   }, [display, justEvaluated, nthRootMode, nthPowerMode, tempValue]);
@@ -204,21 +217,10 @@ export const useCalculator = (t: any) => {
         const num = parseFloat(display);
         const root = parseFloat(tempValue);
         const result = Math.pow(num, 1 / root);
-        setHistory(
-          [
-            {
-              expression: `nthRoot(${num}, ${root})`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `√[${root}]${num}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
+        setHistory([{ expression: `nthRoot(${num}, ${root})`, result: formatDisplayNumber(result), formattedExpression: `√[${root}]${num}` }, ...history].slice(0, 10));
         setEquation(`√[${root}]${num} =`);
         setDisplay(formatDisplayNumber(result));
-        setNthRootMode(false);
-        setTempValue('');
-        setJustEvaluated(true);
+        setNthRootMode(false); setTempValue(''); setJustEvaluated(true);
         return;
       }
 
@@ -226,21 +228,10 @@ export const useCalculator = (t: any) => {
         const num = parseFloat(display);
         const power = parseFloat(tempValue);
         const result = Math.pow(num, power);
-        setHistory(
-          [
-            {
-              expression: `nthPower(${num}, ${power})`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `${num}^${power}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
+        setHistory([{ expression: `nthPower(${num}, ${power})`, result: formatDisplayNumber(result), formattedExpression: `${num}^${power}` }, ...history].slice(0, 10));
         setEquation(`${num}^${power} =`);
         setDisplay(formatDisplayNumber(result));
-        setNthPowerMode(false);
-        setTempValue('');
-        setJustEvaluated(true);
+        setNthPowerMode(false); setTempValue(''); setJustEvaluated(true);
         return;
       }
 
@@ -248,151 +239,64 @@ export const useCalculator = (t: any) => {
       if (!trimmedDisplay || trimmedDisplay === '0') return;
       if (/[+\-×÷]\s*$/.test(trimmedDisplay)) return;
 
-      // Special operators
       if (trimmedDisplay.includes(' %of ')) {
         const [a, b] = trimmedDisplay.split(' %of ').map(parseFloat);
         const result = (a * b) / 100;
-        setHistory(
-          [
-            {
-              expression: `${a} %of ${b}`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `${a}% от ${b}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
-        setEquation(`${a} %of ${b} =`);
-        setDisplay(formatDisplayNumber(result));
-        setJustEvaluated(true);
-        return;
+        setHistory([{ expression: `${a} %of ${b}`, result: formatDisplayNumber(result), formattedExpression: `${a}% от ${b}` }, ...history].slice(0, 10));
+        setEquation(`${a} %of ${b} =`); setDisplay(formatDisplayNumber(result)); setJustEvaluated(true); return;
       }
 
       if (trimmedDisplay.includes(' AND ')) {
         const [a, b] = trimmedDisplay.split(' AND ').map(parseInt);
         const result = a & b;
-        setHistory(
-          [
-            {
-              expression: `${a} AND ${b}`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `${a} AND ${b}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
-        setEquation(`${a} AND ${b} =`);
-        setDisplay(formatDisplayNumber(result));
-        setJustEvaluated(true);
-        return;
+        setHistory([{ expression: `${a} AND ${b}`, result: formatDisplayNumber(result), formattedExpression: `${a} AND ${b}` }, ...history].slice(0, 10));
+        setEquation(`${a} AND ${b} =`); setDisplay(formatDisplayNumber(result)); setJustEvaluated(true); return;
       }
 
-      if (
-        trimmedDisplay.includes(' OR ') &&
-        !trimmedDisplay.includes(' XOR ')
-      ) {
+      if (trimmedDisplay.includes(' OR ') && !trimmedDisplay.includes(' XOR ')) {
         const [a, b] = trimmedDisplay.split(' OR ').map(parseInt);
         const result = a | b;
-        setHistory(
-          [
-            {
-              expression: `${a} OR ${b}`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `${a} OR ${b}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
-        setEquation(`${a} OR ${b} =`);
-        setDisplay(formatDisplayNumber(result));
-        setJustEvaluated(true);
-        return;
+        setHistory([{ expression: `${a} OR ${b}`, result: formatDisplayNumber(result), formattedExpression: `${a} OR ${b}` }, ...history].slice(0, 10));
+        setEquation(`${a} OR ${b} =`); setDisplay(formatDisplayNumber(result)); setJustEvaluated(true); return;
       }
 
       if (trimmedDisplay.includes(' XOR ')) {
         const [a, b] = trimmedDisplay.split(' XOR ').map(parseInt);
         const result = a ^ b;
-        setHistory(
-          [
-            {
-              expression: `${a} XOR ${b}`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `${a} XOR ${b}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
-        setEquation(`${a} XOR ${b} =`);
-        setDisplay(formatDisplayNumber(result));
-        setJustEvaluated(true);
-        return;
+        setHistory([{ expression: `${a} XOR ${b}`, result: formatDisplayNumber(result), formattedExpression: `${a} XOR ${b}` }, ...history].slice(0, 10));
+        setEquation(`${a} XOR ${b} =`); setDisplay(formatDisplayNumber(result)); setJustEvaluated(true); return;
       }
 
       if (trimmedDisplay.includes(' mod ')) {
         const [a, b] = trimmedDisplay.split(' mod ').map(parseFloat);
         const result = a % b;
-        setHistory(
-          [
-            {
-              expression: `${a} mod ${b}`,
-              result: formatDisplayNumber(result),
-              formattedExpression: `${a} mod ${b}`,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
-        setEquation(`${a} mod ${b} =`);
-        setDisplay(formatDisplayNumber(result));
-        setJustEvaluated(true);
-        return;
+        setHistory([{ expression: `${a} mod ${b}`, result: formatDisplayNumber(result), formattedExpression: `${a} mod ${b}` }, ...history].slice(0, 10));
+        setEquation(`${a} mod ${b} =`); setDisplay(formatDisplayNumber(result)); setJustEvaluated(true); return;
       }
 
       const result = evaluateExpression(trimmedDisplay);
-      setHistory(
-        [
-          {
-            expression: trimmedDisplay,
-            result: formatDisplayNumber(result),
-            formattedExpression: trimmedDisplay,
-          },
-          ...history,
-        ].slice(0, 10),
-      );
+      setHistory([{ expression: trimmedDisplay, result: formatDisplayNumber(result), formattedExpression: trimmedDisplay }, ...history].slice(0, 10));
       setEquation(trimmedDisplay + ' =');
       setDisplay(formatDisplayNumber(result));
       setJustEvaluated(true);
     } catch {
-      setDisplay(t.error);
-      setJustEvaluated(true);
+      setDisplay(t.error); setJustEvaluated(true);
     }
-  }, [
-    display,
-    history,
-    formatDisplayNumber,
-    t,
-    nthRootMode,
-    nthPowerMode,
-    tempValue,
-  ]);
+  }, [display, history, formatDisplayNumber, t, nthRootMode, nthPowerMode, tempValue]);
 
   const handleFunction = useCallback(
     (func: string, param?: number) => {
       try {
         if (func === 'negate') {
-          if (display === '0' || display === t.error || display === t.infinity)
-            return;
+          if (display === '0' || display === t.error || display === t.infinity) return;
           const match = display.match(/(.*[+\-×÷]\s*)(-?\d+\.?\d*)$/);
           if (match) {
             const prefix = match[1];
             const numStr = match[2];
-            const newNum = numStr.startsWith('-')
-              ? numStr.slice(1)
-              : '-' + numStr;
+            const newNum = numStr.startsWith('-') ? numStr.slice(1) : '-' + numStr;
             setDisplay(prefix + newNum);
           } else {
-            setDisplay(
-              display.startsWith('-') ? display.slice(1) : '-' + display,
-            );
+            setDisplay(display.startsWith('-') ? display.slice(1) : '-' + display);
           }
           return;
         }
@@ -402,178 +306,63 @@ export const useCalculator = (t: any) => {
         let formattedExp = '';
 
         switch (func) {
-          case 'sqrt':
-            result = Math.sqrt(num);
-            formattedExp = `√${num}`;
-            break;
+          case 'sqrt': result = Math.sqrt(num); formattedExp = `√${num}`; break;
           case 'nthRoot':
-            if (param !== undefined) {
-              result = Math.pow(num, 1 / param);
-              formattedExp = `√[${param}]${num}`;
-            } else return;
+            if (param !== undefined) { result = Math.pow(num, 1 / param); formattedExp = `√[${param}]${num}`; }
+            else return;
             break;
-          case 'square':
-            result = Math.pow(num, 2);
-            formattedExp = `${num}²`;
-            break;
+          case 'square': result = Math.pow(num, 2); formattedExp = `${num}²`; break;
           case 'nthPower':
-            if (param !== undefined) {
-              result = Math.pow(num, param);
-              formattedExp = `${num}^${param}`;
-            } else return;
+            if (param !== undefined) { result = Math.pow(num, param); formattedExp = `${num}^${param}`; }
+            else return;
             break;
-          case 'sin':
-            result = Math.sin((num * Math.PI) / 180);
-            formattedExp = `sin(${num}°)`;
-            break;
-          case 'cos':
-            result = Math.cos((num * Math.PI) / 180);
-            formattedExp = `cos(${num}°)`;
-            break;
-          case 'tg':
-            result = Math.tan((num * Math.PI) / 180);
-            formattedExp = `tg(${num}°)`;
-            break;
-          case 'ctg':
-            result = 1 / Math.tan((num * Math.PI) / 180);
-            formattedExp = `ctg(${num}°)`;
-            break;
-          case 'log':
-            result = Math.log10(num);
-            formattedExp = `log(${num})`;
-            break;
-          case 'ln':
-            result = Math.log(num);
-            formattedExp = `ln(${num})`;
-            break;
+          case 'sin': result = Math.sin((num * Math.PI) / 180); formattedExp = `sin(${num}°)`; break;
+          case 'cos': result = Math.cos((num * Math.PI) / 180); formattedExp = `cos(${num}°)`; break;
+          case 'tg': result = Math.tan((num * Math.PI) / 180); formattedExp = `tg(${num}°)`; break;
+          case 'ctg': result = 1 / Math.tan((num * Math.PI) / 180); formattedExp = `ctg(${num}°)`; break;
+          case 'log': result = Math.log10(num); formattedExp = `log(${num})`; break;
+          case 'ln': result = Math.log(num); formattedExp = `ln(${num})`; break;
           case 'pi':
-            if (justEvaluated || display === '0' || display === t.error) {
-              setDisplay('π');
-              setJustEvaluated(false);
-            } else {
-              // Implicit multiplication: 8π → 8×π, )π → )×π
-              const lastChar = display.slice(-1);
-              const needsMultiply = /[\d)πe]/.test(lastChar);
-              setDisplay(display + (needsMultiply ? '×' : '') + 'π');
-            }
+            if (justEvaluated || display === '0' || display === t.error) { setDisplay('π'); setJustEvaluated(false); }
+            else { const lc = display.slice(-1); const nm = /[\d)πe]/.test(lc); setDisplay(display + (nm ? '×' : '') + 'π'); }
             return;
           case 'e':
-            if (justEvaluated || display === '0' || display === t.error) {
-              setDisplay('e');
-              setJustEvaluated(false);
-            } else {
-              // Implicit multiplication: 8e → 8×e, )e → )×e
-              const lastChar = display.slice(-1);
-              const needsMultiply = /[\d)πe]/.test(lastChar);
-              setDisplay(display + (needsMultiply ? '×' : '') + 'e');
-            }
+            if (justEvaluated || display === '0' || display === t.error) { setDisplay('e'); setJustEvaluated(false); }
+            else { const lc = display.slice(-1); const nm = /[\d)πe]/.test(lc); setDisplay(display + (nm ? '×' : '') + 'e'); }
             return;
-          case 'abs':
-            result = Math.abs(num);
-            formattedExp = `|${num}|`;
-            break;
-          case 'fact':
-            result = factorial(num);
-            formattedExp = `${num}!`;
-            break;
-          case 'percent':
-            result = num / 100;
-            formattedExp = `${num}%`;
-            break;
-          case 'round':
-            result = Math.round(num);
-            formattedExp = `round(${num})`;
-            break;
-          case 'pow10':
-            result = Math.pow(10, num);
-            formattedExp = `10^${num}`;
-            break;
-          case 'asin':
-            result = (Math.asin(num) * 180) / Math.PI;
-            formattedExp = `asin(${num})`;
-            break;
-          case 'acos':
-            result = (Math.acos(num) * 180) / Math.PI;
-            formattedExp = `acos(${num})`;
-            break;
-          case 'atan':
-          case 'atg':
-            result = (Math.atan(num) * 180) / Math.PI;
-            formattedExp = `atg(${num})`;
-            break;
-          case 'acot':
-          case 'actg':
-            result = (Math.atan(1 / num) * 180) / Math.PI;
-            formattedExp = `actg(${num})`;
-            break;
-          case 'not':
-            result = ~parseInt(display);
-            formattedExp = `~${display}`;
-            break;
-          case 'lshift':
-            result = parseInt(display) << 1;
-            formattedExp = `${display} << 1`;
-            break;
-          case 'rshift':
-            result = parseInt(display) >> 1;
-            formattedExp = `${display} >> 1`;
-            break;
-          case 'reciprocal':
-            result = 1 / num;
-            formattedExp = `1/${num}`;
-            break;
-          case 'exp':
-            result = Math.exp(num);
-            formattedExp = `e^${num}`;
-            break;
-          default:
-            return;
+          case 'abs': result = Math.abs(num); formattedExp = `|${num}|`; break;
+          case 'fact': result = factorial(num); formattedExp = `${num}!`; break;
+          case 'percent': result = num / 100; formattedExp = `${num}%`; break;
+          case 'round': result = Math.round(num); formattedExp = `round(${num})`; break;
+          case 'pow10': result = Math.pow(10, num); formattedExp = `10^${num}`; break;
+          case 'asin': result = (Math.asin(num) * 180) / Math.PI; formattedExp = `asin(${num})`; break;
+          case 'acos': result = (Math.acos(num) * 180) / Math.PI; formattedExp = `acos(${num})`; break;
+          case 'atg': result = (Math.atan(num) * 180) / Math.PI; formattedExp = `atg(${num})`; break;
+          case 'actg': result = (Math.atan(1 / num) * 180) / Math.PI; formattedExp = `actg(${num})`; break;
+          case 'not': result = ~parseInt(display); formattedExp = `~${display}`; break;
+          case 'lshift': result = parseInt(display) << 1; formattedExp = `${display} << 1`; break;
+          case 'rshift': result = parseInt(display) >> 1; formattedExp = `${display} >> 1`; break;
+          case 'reciprocal': result = 1 / num; formattedExp = `1/${num}`; break;
+          case 'exp': result = Math.exp(num); formattedExp = `e^${num}`; break;
+          default: return;
         }
 
-        setHistory(
-          [
-            {
-              expression: func,
-              result: formatDisplayNumber(result),
-              formattedExpression: formattedExp,
-            },
-            ...history,
-          ].slice(0, 10),
-        );
+        setHistory([{ expression: func, result: formatDisplayNumber(result), formattedExpression: formattedExp }, ...history].slice(0, 10));
         setEquation(formattedExp + ' =');
         setDisplay(formatDisplayNumber(result));
         setJustEvaluated(true);
       } catch {
-        setDisplay(t.error);
-        setJustEvaluated(true);
+        setDisplay(t.error); setJustEvaluated(true);
       }
     },
     [display, history, formatDisplayNumber, t, justEvaluated],
   );
 
   return {
-    calcType,
-    setCalcType,
-    display,
-    equation,
-    history,
-    setHistory,
-    numberBase,
-    setNumberBase,
-    nthRootMode,
-    setNthRootMode,
-    nthPowerMode,
-    setNthPowerMode,
-    tempValue,
-    setTempValue,
-    handleNumber,
-    handleOperator,
-    handleDecimal,
-    handleClear,
-    handleBackspace,
-    handleEqual,
-    handleFunction,
-    formatDisplayNumber,
-    formatNumberInBase,
+    calcType, setCalcType, display, equation, history, setHistory,
+    numberBase, setNumberBase,
+    nthRootMode, setNthRootMode, nthPowerMode, setNthPowerMode, tempValue, setTempValue,
+    handleNumber, handleOperator, handleDecimal, handleClear, handleBackspace, handleEqual, handleFunction,
+    formatDisplayNumber, formatNumberInBase,
   };
 };

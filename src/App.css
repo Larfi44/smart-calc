@@ -224,6 +224,10 @@ body {
   gap: 10px;
 }
 
+.button-row-top {
+  grid-template-columns: 1fr 1fr 0.5fr 0.5fr 1fr;
+}
+
 .btn {
   padding: 18px;
   border: none;
@@ -807,6 +811,10 @@ body {
   .button-row {
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
+  }
+
+  .button-row-top {
+    grid-template-columns: 1fr 1fr 0.5fr 0.5fr 1fr;
   }
 
   .btn {
