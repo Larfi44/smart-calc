@@ -1,6 +1,24 @@
-export type CalculatorMode = 'calculator' | 'converter' | 'timer' | 'currency' | 'settings';
-export type CalculatorType = 'normal' | 'scientific' | 'programmer';
-export type ConverterType = 'length' | 'weight' | 'time' | 'temperature' | 'speed' | 'area' | 'volume';
+export type CalculatorMode =
+  | 'calculator'
+  | 'converter'
+  | 'timer'
+  | 'currency'
+  | 'randomizer'
+  | 'settings';
+export type CalculatorType =
+  | 'normal'
+  | 'scientific'
+  | 'programmer'
+  | 'fractions';
+export type ConverterType =
+  | 'length'
+  | 'weight'
+  | 'time'
+  | 'temperature'
+  | 'speed'
+  | 'area'
+  | 'volume'
+  | 'data';
 export type Language = 'ru' | 'en';
 export type Theme = 'light' | 'dark' | 'auto';
 export type ChartTimeframe = 'minute' | 'hour' | 'day' | 'month';

@@ -12,13 +12,68 @@ export const useConverter = () => {
   const [toUnit, setToUnit] = useState('kilometers');
   const [convertResult, setConvertResult] = useState<string | null>(null);
 
-  const lengthUnits = ['meters', 'kilometers', 'centimeters', 'millimeters', 'miles', 'yards', 'feet', 'inches'];
+  const lengthUnits = [
+    'meters',
+    'kilometers',
+    'centimeters',
+    'millimeters',
+    'miles',
+    'yards',
+    'feet',
+    'inches',
+    'astronomicalUnit',
+    'lightYear',
+  ];
   const weightUnits = ['kilograms', 'grams', 'pounds', 'ounces', 'tonnes'];
-  const timeUnits = ['milliseconds', 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
+  const timeUnits = [
+    'milliseconds',
+    'seconds',
+    'minutes',
+    'hours',
+    'days',
+    'weeks',
+    'months',
+    'years',
+  ];
   const temperatureUnits = ['celsius', 'fahrenheit', 'kelvin'];
   const speedUnits = ['ms', 'kmh', 'mph', 'knots', 'mpm'];
-  const areaUnits = ['m2', 'km2', 'hectares', 'acres', 'ft2', 'in2', 'mi2'];
-  const volumeUnits = ['liters', 'milliliters', 'gallons', 'quarts', 'pints', 'm3', 'cm3', 'km3', 'in3', 'ft3', 'mi3'];
+  const areaUnits = [
+    'm2',
+    'km2',
+    'hectares',
+    'acres',
+    'ft2',
+    'in2',
+    'mi2',
+    'au2',
+    'ly2',
+  ];
+  const volumeUnits = [
+    'liters',
+    'milliliters',
+    'gallons',
+    'quarts',
+    'pints',
+    'm3',
+    'cm3',
+    'km3',
+    'in3',
+    'ft3',
+    'mi3',
+    'au3',
+    'ly3',
+  ];
+  const dataUnits = [
+    'bits',
+    'bytes',
+    'kilobytes',
+    'megabytes',
+    'gigabytes',
+    'terabytes',
+    'petabytes',
+    'exabytes',
+    'zettabytes',
+  ];
 
   const units: UnitMap = {
     length: lengthUnits,
@@ -27,29 +82,85 @@ export const useConverter = () => {
     temperature: temperatureUnits,
     speed: speedUnits,
     area: areaUnits,
-    volume: volumeUnits
+    volume: volumeUnits,
+    data: dataUnits,
   };
 
   const conversionRates: Record<string, number> = {
-    meters: 1, kilometers: 1000, centimeters: 0.01, millimeters: 0.001,
-    miles: 1609.34, yards: 0.9144, feet: 0.3048, inches: 0.0254,
-    kilograms: 1, grams: 0.001, pounds: 0.453592, ounces: 0.0283495, tonnes: 1000,
-    milliseconds: 0.001, seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800, months: 2628000, years: 31536000,
-    ms: 1, kmh: 0.277778, mph: 0.44704, knots: 0.514444, mpm: 0.016667,
-    m2: 1, km2: 1000000, hectares: 10000, acres: 4046.86, ft2: 0.092903, in2: 0.00064516, mi2: 2589988.11,
-    liters: 1, milliliters: 0.001, gallons: 3.78541, quarts: 0.946353, pints: 0.473176, m3: 1000, cm3: 0.001,
-    km3: 1e12, in3: 0.0163871, ft3: 28.3168, mi3: 4168181825.44
+    meters: 1,
+    kilometers: 1000,
+    centimeters: 0.01,
+    millimeters: 0.001,
+    miles: 1609.34,
+    yards: 0.9144,
+    feet: 0.3048,
+    inches: 0.0254,
+    astronomicalUnit: 149597870700,
+    lightYear: 9460730472580800,
+    kilograms: 1,
+    grams: 0.001,
+    pounds: 0.453592,
+    ounces: 0.0283495,
+    tonnes: 1000,
+    milliseconds: 0.001,
+    seconds: 1,
+    minutes: 60,
+    hours: 3600,
+    days: 86400,
+    weeks: 604800,
+    months: 2628000,
+    years: 31536000,
+    ms: 1,
+    kmh: 0.277778,
+    mph: 0.44704,
+    knots: 0.514444,
+    mpm: 0.016667,
+    m2: 1,
+    km2: 1000000,
+    hectares: 10000,
+    acres: 4046.86,
+    ft2: 0.092903,
+    in2: 0.00064516,
+    mi2: 2589988.11,
+    au2: 2.23795229157e22,
+    ly2: 8.95054210748e31,
+    liters: 1,
+    milliliters: 0.001,
+    gallons: 3.78541,
+    quarts: 0.946353,
+    pints: 0.473176,
+    m3: 1000,
+    cm3: 0.001,
+    km3: 1e12,
+    in3: 0.0163871,
+    ft3: 28.3168,
+    mi3: 4168181825.44,
+    au3: 3.34792899409e33,
+    ly3: 8.46628021441e50,
+    bits: 0.125,
+    bytes: 1,
+    kilobytes: 1024,
+    megabytes: 1048576,
+    gigabytes: 1073741824,
+    terabytes: 1099511627776,
+    petabytes: 1125899906842624,
+    exabytes: 1152921504606846976,
+    zettabytes: 1180591620717411303424,
   };
 
-  const conversionTemperature = (value: number, from: string, to: string): number => {
+  const conversionTemperature = (
+    value: number,
+    from: string,
+    to: string,
+  ): number => {
     let celsius: number;
     if (from === 'celsius') celsius = value;
-    else if (from === 'fahrenheit') celsius = (value - 32) * 5/9;
+    else if (from === 'fahrenheit') celsius = ((value - 32) * 5) / 9;
     else if (from === 'kelvin') celsius = value - 273.15;
     else celsius = value;
-    
+
     if (to === 'celsius') return celsius;
-    else if (to === 'fahrenheit') return celsius * 9/5 + 32;
+    else if (to === 'fahrenheit') return (celsius * 9) / 5 + 32;
     else if (to === 'kelvin') return celsius + 273.15;
     return celsius;
   };
@@ -71,8 +182,19 @@ export const useConverter = () => {
         return;
       }
     }
-    
-    const resultStr = result.toFixed(6).replace(/\.?0+$/, '');
+
+    // Format result: use enough decimals to show non-zero values
+    let resultStr: string;
+    if (Math.abs(result) < 0.000001 && result !== 0) {
+      // Very small number — use toString() to show scientific notation if needed,
+      // then convert to a reasonable fixed decimal format
+      resultStr = result
+        .toPrecision(10)
+        .replace(/\.?0+$/, '')
+        .replace(/e\+?(\d+)/, 'e$1');
+    } else {
+      resultStr = result.toFixed(10).replace(/\.?0+$/, '');
+    }
     setConvertResult(resultStr);
   };
 
@@ -80,7 +202,7 @@ export const useConverter = () => {
     setConverterType(newType);
     setConvertValue('');
     setConvertResult(null);
-    
+
     const defaults: Record<ConverterType, { from: string; to: string }> = {
       length: { from: 'meters', to: 'kilometers' },
       weight: { from: 'kilograms', to: 'pounds' },
@@ -88,17 +210,40 @@ export const useConverter = () => {
       temperature: { from: 'celsius', to: 'fahrenheit' },
       speed: { from: 'kmh', to: 'mph' },
       area: { from: 'hectares', to: 'acres' },
-      volume: { from: 'liters', to: 'gallons' }
+      volume: { from: 'liters', to: 'gallons' },
+      data: { from: 'megabytes', to: 'gigabytes' },
     };
-    
+
     setFromUnit(defaults[newType].from);
     setToUnit(defaults[newType].to);
   };
 
+  const setFromUnitClear = (unit: string) => {
+    setFromUnit(unit);
+    setConvertResult(null);
+  };
+
+  const setToUnitClear = (unit: string) => {
+    setToUnit(unit);
+    setConvertResult(null);
+  };
+
+  const setConvertValueClear = (value: string) => {
+    setConvertValue(value);
+    setConvertResult(null);
+  };
+
   return {
-    converterType, convertValue, fromUnit, toUnit, convertResult,
+    converterType,
+    convertValue,
+    fromUnit,
+    toUnit,
+    convertResult,
     units,
-    setConvertValue, setFromUnit, setToUnit,
-    convertUnits, handleConverterTypeChange
+    setConvertValue: setConvertValueClear,
+    setFromUnit: setFromUnitClear,
+    setToUnit: setToUnitClear,
+    convertUnits,
+    handleConverterTypeChange,
   };
 };

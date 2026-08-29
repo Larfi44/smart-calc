@@ -1,4 +1,4 @@
-# 🧮 Smart Calculator
+# 🧮 Yaroslav Calculator
 
 Multi-functional calculator with with site and **Tauri v2** Android build, including calculator,
 converter, timer, currency exchange, and settings.
@@ -59,7 +59,7 @@ npm run deploy
 bash build-apk.sh
 ```
 
-Output: `apk/SmartCalc.apk` (~32 MB)
+Output: `apk/YaroslavCalculator.apk` (~32 MB)
 
 ### Prerequisites
 

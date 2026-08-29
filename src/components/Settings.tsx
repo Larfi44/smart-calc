@@ -109,19 +109,34 @@ export const Settings: React.FC<SettingsProps> = ({
         <p className="dev-by">
           {t.developedBy}{' '}
           <a
-            href="https://larfi44.github.io/Yarik-Studio.github.io/index.html"
+            href="https://larfi44.github.io/yarik-studio/index.html"
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) =>
               handleExternalLink(
                 e,
-                'https://larfi44.github.io/Yarik-Studio.github.io/index.html',
+                'https://larfi44.github.io/yarik-studio/index.html',
               )
             }
           >
             Yarik Studio
           </a>
         </p>
+
+        <a
+          className="support-btn"
+          href="https://larfi44.github.io/yarik-studio/pages/support.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) =>
+            handleExternalLink(
+              e,
+              'https://larfi44.github.io/yarik-studio/pages/support.html',
+            )
+          }
+        >
+          {t.technicalSupport}
+        </a>
 
         <a
           className="donate-btn"

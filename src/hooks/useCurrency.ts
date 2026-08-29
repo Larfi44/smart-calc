@@ -208,6 +208,30 @@ const fallbackRates: Record<string, number> = {
   GEL: 2.7,
 };
 
+const STORAGE_KEY = 'yaroslav-calculator-currency-rates';
+const STORAGE_TIMESTAMP_KEY = 'yaroslav-calculator-currency-timestamp';
+
+const loadCachedRates = (): Record<string, number> | null => {
+  try {
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return null;
+};
+
+const saveRatesToCache = (rates: Record<string, number>) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rates));
+    localStorage.setItem(STORAGE_TIMESTAMP_KEY, Date.now().toString());
+  } catch {
+    // Ignore storage errors
+  }
+};
+
 export const useCurrency = (language: Language) => {
   const [currencyFrom, setCurrencyFrom] = useState('USD');
   const [currencyTo, setCurrencyTo] = useState('RUB');
@@ -215,7 +239,9 @@ export const useCurrency = (language: Language) => {
   const [currencyResult, setCurrencyResult] = useState<string | null>(null);
   const [currencyRate, setCurrencyRate] = useState<number>(0);
   const [currencyLoading, setCurrencyLoading] = useState(false);
-  const [rates, setRates] = useState<Record<string, number>>(fallbackRates);
+  const [rates, setRates] = useState<Record<string, number>>(() => {
+    return loadCachedRates() || fallbackRates;
+  });
 
   const getCurrencyName = (code: string): string => {
     const info = currencyList.find((c) => c.code === code);
@@ -240,10 +266,14 @@ export const useCurrency = (language: Language) => {
         const data = await response.json();
         if (data.result === 'success' && data.rates) {
           setRates(data.rates);
+          saveRatesToCache(data.rates);
         }
       } catch {
-        // Silently use fallback rates
-        console.log('Using fallback currency rates');
+        // Silently use cached or fallback rates
+        const cached = loadCachedRates();
+        if (cached) {
+          setRates(cached);
+        }
       }
     };
 
@@ -254,15 +284,26 @@ export const useCurrency = (language: Language) => {
     (from: string, to: string): number => {
       if (from === to) return 1;
 
-      // If we have fetched rates for the current base currency
-      if (rates[from] !== undefined && rates[to] !== undefined) {
-        // rates are relative to currencyFrom base
-        if (from === currencyFrom && rates[to]) {
-          return rates[to];
-        }
+      // rates from the API are always relative to currencyFrom (the base)
+      // The API response does NOT include the base currency itself in rates
+
+      // Try using API rates if available
+      if (from === currencyFrom && rates[to] !== undefined) {
+        // e.g. from=USD, currencyFrom=USD → rate is directly rates["RUB"]
+        return rates[to];
       }
 
-      // Convert via USD using fallback rates
+      if (to === currencyFrom && rates[from] !== undefined) {
+        // e.g. to=USD, currencyFrom=USD → 1 / rates["RUB"]
+        return 1 / rates[from];
+      }
+
+      if (rates[from] !== undefined && rates[to] !== undefined) {
+        // Both are not the base, convert via base currency
+        return rates[to] / rates[from];
+      }
+
+      // Fallback to hardcoded rates via USD
       const fromRate = fallbackRates[from] || 1;
       const toRate = fallbackRates[to] || 1;
       return toRate / fromRate;
@@ -279,9 +320,34 @@ export const useCurrency = (language: Language) => {
 
     setCurrencyRate(rate);
     const result = amount * rate;
-    setCurrencyResult(result.toFixed(2));
+    // Format with sufficient precision
+    let resultStr: string;
+    if (Math.abs(result) < 0.0001 && result !== 0) {
+      resultStr = result
+        .toPrecision(10)
+        .replace(/\.?0+$/, '')
+        .replace(/e\+?(\d+)/, 'e$1');
+    } else {
+      resultStr = result.toFixed(6).replace(/\.?0+$/, '');
+    }
+    setCurrencyResult(resultStr);
     setCurrencyLoading(false);
   }, [currencyAmount, currencyFrom, currencyTo, getRate]);
+
+  const setCurrencyFromClear = (code: string) => {
+    setCurrencyFrom(code);
+    setCurrencyResult(null);
+  };
+
+  const setCurrencyToClear = (code: string) => {
+    setCurrencyTo(code);
+    setCurrencyResult(null);
+  };
+
+  const setCurrencyAmountClear = (amount: string) => {
+    setCurrencyAmount(amount);
+    setCurrencyResult(null);
+  };
 
   return {
     currencyFrom,
@@ -291,9 +357,9 @@ export const useCurrency = (language: Language) => {
     currencyRate,
     currencyLoading,
     currencyList,
-    setCurrencyFrom,
-    setCurrencyTo,
-    setCurrencyAmount,
+    setCurrencyFrom: setCurrencyFromClear,
+    setCurrencyTo: setCurrencyToClear,
+    setCurrencyAmount: setCurrencyAmountClear,
     setCurrencyResult,
     convertCurrency,
     getCurrencyName,

@@ -5,7 +5,16 @@ export const useSettings = () => {
   const getInitialLanguage = (): Language => {
     const saved = localStorage.getItem('calculator_language');
     if (saved === 'ru' || saved === 'en') return saved;
-    return window.navigator.language.startsWith('ru') ? 'ru' : 'en';
+
+    // Detect system/browser language: check navigator.languages, navigator.language,
+    // and Intl locale for broader compatibility (Tauri Android, Web, etc.)
+    const lang = (
+      navigator.languages?.[0] ||
+      navigator.language ||
+      Intl.DateTimeFormat().resolvedOptions().locale ||
+      ''
+    ).toLowerCase();
+    return lang.startsWith('ru') ? 'ru' : 'en';
   };
 
   const getInitialTheme = (): Theme => {
@@ -27,9 +36,13 @@ export const useSettings = () => {
 
   useEffect(() => {
     const root = document.documentElement;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)',
+    ).matches;
     const isDark = theme === 'dark' || (theme === 'auto' && prefersDark);
-    isDark ? root.classList.add('dark-theme') : root.classList.remove('dark-theme');
+    isDark
+      ? root.classList.add('dark-theme')
+      : root.classList.remove('dark-theme');
   }, [theme]);
 
   useEffect(() => {
@@ -37,7 +50,9 @@ export const useSettings = () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const handler = () => {
         const root = document.documentElement;
-        mediaQuery.matches ? root.classList.add('dark-theme') : root.classList.remove('dark-theme');
+        mediaQuery.matches
+          ? root.classList.add('dark-theme')
+          : root.classList.remove('dark-theme');
       };
       mediaQuery.addEventListener('change', handler);
       return () => mediaQuery.removeEventListener('change', handler);

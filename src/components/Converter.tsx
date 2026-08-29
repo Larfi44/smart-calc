@@ -102,6 +102,12 @@ export const Converter: React.FC<ConverterProps> = (props) => {
         >
           {t.converterTypes.volume}
         </button>
+        <button
+          className={`type-btn ${converterType === 'data' ? 'active' : ''}`}
+          onClick={() => handleConverterTypeChange('data')}
+        >
+          {t.converterTypes.data}
+        </button>
       </div>
 
       <div className="converter-inputs">

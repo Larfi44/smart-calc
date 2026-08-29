@@ -11,6 +11,7 @@ import { Calculator } from './components/Calculator';
 import { Converter } from './components/Converter';
 import { Timer } from './components/Timer';
 import { Currency } from './components/Currency';
+import { Randomizer } from './components/Randomizer';
 import { Settings } from './components/Settings';
 import { translations } from './constants/translations';
 import './App.css';
@@ -25,9 +26,9 @@ const App: React.FC = () => {
   const { language, setLanguage, theme, setTheme } = useSettings();
   const [mode, setMode] = useState<CalculatorMode>('calculator');
   const [showHistory, setShowHistory] = useState(false);
-  
+
   const t = translations[language];
-  
+
   const calc = useCalculator(t);
   const converter = useConverter();
   const currency = useCurrency(language);
@@ -38,6 +39,7 @@ const App: React.FC = () => {
     { id: 'converter', icon: '🔄', label: t.converter },
     { id: 'timer', icon: '⏰', label: t.timer },
     { id: 'currency', icon: '💱', label: t.currency },
+    { id: 'randomizer', icon: '🎲', label: t.randomizer },
     { id: 'settings', icon: '⚙️', label: t.settings },
   ];
 
@@ -45,7 +47,7 @@ const App: React.FC = () => {
     <div className="app">
       <div className="app-container">
         <Header title={t.title} />
-        
+
         <MenuNav mode={mode} onModeChange={setMode} items={menuItems} />
 
         <main className="main-content">
@@ -57,21 +59,25 @@ const App: React.FC = () => {
               setShowHistory={setShowHistory}
             />
           )}
-          
+
           {mode === 'converter' && (
             <Converter t={{ ...t, language }} {...converter} />
           )}
-          
-          {mode === 'timer' && (
-            <Timer t={t} {...timer} />
-          )}
-          
-          {mode === 'currency' && (
-            <Currency t={t} {...currency} />
-          )}
-          
+
+          {mode === 'timer' && <Timer t={t} {...timer} />}
+
+          {mode === 'currency' && <Currency t={t} {...currency} />}
+
+          {mode === 'randomizer' && <Randomizer t={t} />}
+
           {mode === 'settings' && (
-            <Settings t={t} language={language} setLanguage={setLanguage} theme={theme} setTheme={setTheme} />
+            <Settings
+              t={t}
+              language={language}
+              setLanguage={setLanguage}
+              theme={theme}
+              setTheme={setTheme}
+            />
           )}
         </main>
       </div>
