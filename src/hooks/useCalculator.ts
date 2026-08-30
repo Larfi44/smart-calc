@@ -748,7 +748,7 @@ export const useCalculator = (t: any) => {
               formattedExpression: `${a}% от ${b}`,
             },
             ...history,
-          ].slice(0, 10),
+          ].slice(0, 200),
         );
         setEquation(`${a} %of ${b} =`);
         setDisplay(formatDisplayNumber(result));
@@ -769,7 +769,7 @@ export const useCalculator = (t: any) => {
               formattedExpression: `${a} AND ${b}`,
             },
             ...history,
-          ].slice(0, 10),
+          ].slice(0, 200),
         );
         setEquation(`${a} AND ${b} =`);
         setDisplay(formatDisplayNumber(result));
@@ -791,7 +791,7 @@ export const useCalculator = (t: any) => {
               formattedExpression: `${a} OR ${b}`,
             },
             ...history,
-          ].slice(0, 10),
+          ].slice(0, 200),
         );
         setEquation(`${a} OR ${b} =`);
         setDisplay(formatDisplayNumber(result));
@@ -812,7 +812,7 @@ export const useCalculator = (t: any) => {
               formattedExpression: `${a} XOR ${b}`,
             },
             ...history,
-          ].slice(0, 10),
+          ].slice(0, 200),
         );
         setEquation(`${a} XOR ${b} =`);
         setDisplay(formatDisplayNumber(result));
@@ -833,7 +833,7 @@ export const useCalculator = (t: any) => {
               formattedExpression: `${a} mod ${b}`,
             },
             ...history,
-          ].slice(0, 10),
+          ].slice(0, 200),
         );
         setEquation(`${a} mod ${b} =`);
         setDisplay(formatDisplayNumber(result));
@@ -850,7 +850,7 @@ export const useCalculator = (t: any) => {
             formattedExpression: trimmedDisplay,
           },
           ...history,
-        ].slice(0, 10),
+        ].slice(0, 200),
       );
       setEquation(trimmedDisplay + ' =');
       setDisplay(formatDisplayNumber(result));

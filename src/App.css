@@ -30,7 +30,7 @@
   --error-color: #ff6b6b;
   --success-color: #00d2a0;
   --warning-color: #ffa502;
-  --operator-color: #8c7ae6;
+  --operator-color: rgb(255, 125, 0);
   --bg-body: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 50%, #1a1a2e 100%);
 }
 
@@ -836,12 +836,19 @@ body {
 }
 
 @media (max-width: 450px) {
+  body {
+    background: var(--bg-primary);
+  }
+
   .app {
-    padding: 5px;
+    padding: 0;
   }
 
   .app-container {
-    border-radius: 20px;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+    min-height: 100vh;
   }
 
   .header {
@@ -1232,8 +1239,17 @@ body {
 
 .randomizer-range {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.randomizer-range .input-group {
+  min-width: 0;
+}
+
+.randomizer-range .input-group input {
+  width: 100%;
+  min-width: 0;
 }
 
 .randomizer-textarea {
