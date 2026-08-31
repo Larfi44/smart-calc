@@ -107,6 +107,12 @@ export const useCalculator = (t: any) => {
     return `${sign}${h1}/${k1}`;
   };
 
+  // Remove JavaScript floating-point noise (e.g. Math.sin(30°) → 0.49999999999999994)
+  const roundFloat = (value: number): number => {
+    if (!isFinite(value)) return value;
+    return parseFloat(value.toPrecision(12));
+  };
+
   const formatDisplayNumber = useCallback(
     (num: number | string): string => {
       if (typeof num === 'string') {
@@ -116,8 +122,9 @@ export const useCalculator = (t: any) => {
       }
       if (isNaN(num)) return t.error;
       if (num === Infinity || num === -Infinity) return t.infinity;
-      if (calcType === 'fractions') return decimalToFraction(num);
-      return num.toString();
+      const rounded = roundFloat(num);
+      if (calcType === 'fractions') return decimalToFraction(rounded);
+      return rounded.toString();
     },
     [t, calcType],
   );
