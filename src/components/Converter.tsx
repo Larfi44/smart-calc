@@ -9,6 +9,7 @@ interface ConverterProps {
   fromUnit: string;
   toUnit: string;
   convertResult: string | null;
+  unitRate: string | null;
   units: any;
   setConvertValue: (value: string) => void;
   setFromUnit: (unit: string) => void;
@@ -25,6 +26,7 @@ export const Converter: React.FC<ConverterProps> = (props) => {
     fromUnit,
     toUnit,
     convertResult,
+    unitRate,
     units,
     setConvertValue,
     setFromUnit,
@@ -156,6 +158,12 @@ export const Converter: React.FC<ConverterProps> = (props) => {
             {convertValue} {getUnitName(fromUnit)} ={' '}
             <strong>{convertResult}</strong> {getUnitName(toUnit)}
           </p>
+          {unitRate !== null && (
+            <p className="exchange-rate">
+              {t.exchangeRate}: 1 {getUnitName(fromUnit)} = {unitRate}{' '}
+              {getUnitName(toUnit)}
+            </p>
+          )}
         </div>
       )}
     </div>

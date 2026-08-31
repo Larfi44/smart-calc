@@ -109,13 +109,13 @@ export const Settings: React.FC<SettingsProps> = ({
         <p className="dev-by">
           {t.developedBy}{' '}
           <a
-            href="https://larfi44.github.io/yarik-studio/index.html"
+            href="https://larfi.gitverse.site/yarik-studio/index.html"
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) =>
               handleExternalLink(
                 e,
-                'https://larfi44.github.io/yarik-studio/index.html',
+                'https://larfi.gitverse.site/yarik-studio/index.html',
               )
             }
           >

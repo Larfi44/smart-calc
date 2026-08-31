@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ConverterType } from '../types';
+import { formatDecimal } from '../utils/format';
 
 interface UnitMap {
   [key: string]: string[];
@@ -11,6 +12,7 @@ export const useConverter = () => {
   const [fromUnit, setFromUnit] = useState('meters');
   const [toUnit, setToUnit] = useState('kilometers');
   const [convertResult, setConvertResult] = useState<string | null>(null);
+  const [unitRate, setUnitRate] = useState<string | null>(null);
 
   const lengthUnits = [
     'meters',
@@ -169,39 +171,33 @@ export const useConverter = () => {
     if (!convertValue || !fromUnit || !toUnit) return;
     const value = parseFloat(convertValue);
     let result: number;
+    let rateValue = 0;
 
     if (converterType === 'temperature') {
       result = conversionTemperature(value, fromUnit, toUnit);
+      rateValue = conversionTemperature(1, fromUnit, toUnit);
     } else {
       const fromRate = conversionRates[fromUnit];
       const toRate = conversionRates[toUnit];
       if (fromRate && toRate) {
         const baseValue = value * fromRate;
         result = baseValue / toRate;
+        rateValue = fromRate / toRate;
       } else {
         return;
       }
     }
 
-    // Format result: use enough decimals to show non-zero values
-    let resultStr: string;
-    if (Math.abs(result) < 0.000001 && result !== 0) {
-      // Very small number — use toString() to show scientific notation if needed,
-      // then convert to a reasonable fixed decimal format
-      resultStr = result
-        .toPrecision(10)
-        .replace(/\.?0+$/, '')
-        .replace(/e\+?(\d+)/, 'e$1');
-    } else {
-      resultStr = result.toFixed(10).replace(/\.?0+$/, '');
-    }
-    setConvertResult(resultStr);
+    // Format with the shared smart decimal formatting
+    setConvertResult(formatDecimal(result));
+    setUnitRate(formatDecimal(rateValue));
   };
 
   const handleConverterTypeChange = (newType: ConverterType) => {
     setConverterType(newType);
     setConvertValue('');
     setConvertResult(null);
+    setUnitRate(null);
 
     const defaults: Record<ConverterType, { from: string; to: string }> = {
       length: { from: 'meters', to: 'kilometers' },
@@ -221,16 +217,19 @@ export const useConverter = () => {
   const setFromUnitClear = (unit: string) => {
     setFromUnit(unit);
     setConvertResult(null);
+    setUnitRate(null);
   };
 
   const setToUnitClear = (unit: string) => {
     setToUnit(unit);
     setConvertResult(null);
+    setUnitRate(null);
   };
 
   const setConvertValueClear = (value: string) => {
     setConvertValue(value);
     setConvertResult(null);
+    setUnitRate(null);
   };
 
   return {
@@ -239,6 +238,7 @@ export const useConverter = () => {
     fromUnit,
     toUnit,
     convertResult,
+    unitRate,
     units,
     setConvertValue: setConvertValueClear,
     setFromUnit: setFromUnitClear,

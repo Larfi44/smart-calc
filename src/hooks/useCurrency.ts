@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { CurrencyInfo, Language } from '../types';
+import { formatDecimal } from '../utils/format';
 
 const currencyList: CurrencyInfo[] = [
   {
@@ -320,17 +321,8 @@ export const useCurrency = (language: Language) => {
 
     setCurrencyRate(rate);
     const result = amount * rate;
-    // Format with sufficient precision
-    let resultStr: string;
-    if (Math.abs(result) < 0.0001 && result !== 0) {
-      resultStr = result
-        .toPrecision(10)
-        .replace(/\.?0+$/, '')
-        .replace(/e\+?(\d+)/, 'e$1');
-    } else {
-      resultStr = result.toFixed(6).replace(/\.?0+$/, '');
-    }
-    setCurrencyResult(resultStr);
+    // Format with the shared smart decimal formatting
+    setCurrencyResult(formatDecimal(result));
     setCurrencyLoading(false);
   }, [currencyAmount, currencyFrom, currencyTo, getRate]);
 
