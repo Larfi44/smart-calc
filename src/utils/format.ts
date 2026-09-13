@@ -6,10 +6,11 @@ export const roundFloat = (value: number): number => {
 
 // Format decimals: 2 digits after "." by default. If the value is small, show
 // one digit after the first non-zero digit so the precision is kept (e.g.
-// 0.0166 → "0.017", 0.005 → "0.005"). If rounding would hide the fractional
-// part entirely (e.g. 0.996 → "1"), show more digits (0.996 → "0.996").
-// Trailing zeros are removed (2.50 → 2.5). A value that is exactly 0 (or has
-// no fractional part) is shown as "0" / integer.
+// 0.0166 → "0.017", 0.005 → "0.005"). Repeating/irrational values (1/3, π, √2)
+// get 5 digits after "." (1/3 → "0.33333", π → "3.14159"). If rounding would
+// hide the fractional part entirely (e.g. 0.996 → "1"), show more digits
+// (0.996 → "0.996"). Trailing zeros are removed (2.50 → 2.5). A value that is
+// exactly 0 (or has no fractional part) is shown as "0" / integer.
 export const formatDecimal = (value: number): string => {
   if (!isFinite(value)) return value.toString();
   if (value === 0) return '0';
@@ -28,7 +29,22 @@ export const formatDecimal = (value: number): string => {
     // Integer value — nothing meaningful after the decimal point
     return value.toFixed(0);
   }
-  const baseDecimals = Math.max(2, firstNonZero + 1);
+
+  // Detect whether the value has a finite decimal representation.
+  // Repeating/irrational values (1/3, π, √2, ...) get 5 decimals.
+  let terminates = false;
+  let scaled = abs;
+  for (let k = 0; k <= 12; k++) {
+    if (Math.abs(scaled - Math.round(scaled)) < 1e-9) {
+      terminates = true;
+      break;
+    }
+    scaled *= 10;
+  }
+
+  const baseDecimals = terminates
+    ? Math.max(2, firstNonZero + 1)
+    : Math.max(5, firstNonZero + 1);
   // Increase decimals while rounding would hide the fractional part entirely
   // (e.g. 1020 MB → GB = 0.99609375, where 2 decimals give "1")
   for (let d = baseDecimals; d <= 12; d++) {

@@ -107,10 +107,12 @@ export const Currency: React.FC<CurrencyProps> = ({
             {currencyAmount} {getCurrencyName(currencyFrom)} ={' '}
             <strong>{currencyResult}</strong> {getCurrencyName(currencyTo)}
           </p>
-          <p className="exchange-rate">
-            {t.exchangeRate}: 1 {currencyFrom} = {currencyRate.toFixed(4)}{' '}
-            {currencyTo}
-          </p>
+          {parseFloat(currencyAmount) !== 1 && (
+            <p className="exchange-rate">
+              {t.exchangeRate}: 1 {currencyFrom} = {currencyRate.toFixed(4)}{' '}
+              {currencyTo}
+            </p>
+          )}
         </div>
       )}
     </div>

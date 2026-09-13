@@ -95,7 +95,7 @@ export const Settings: React.FC<SettingsProps> = ({
       {!isTauri && (
         <div className="settings-section download-section">
           <a
-            href="https://github.com/Larfi44/smart-calc/releases"
+            href="https://www.rustore.ru/catalog/app/com.yarikstudio.smartcalc"
             target="_blank"
             rel="noopener noreferrer"
             className="download-android-btn"

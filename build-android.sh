@@ -43,7 +43,7 @@ if [ -f "$UNIVERSAL_APK" ]; then
   rm -f "$APK_DIR"/*.apk
   ALIGNED_APK="$APK_DIR/app-aligned.apk"
   "$ZIPALIGN" -f -v 4 "$UNIVERSAL_APK" "$ALIGNED_APK"
-  SIGNED_APK="$APK_DIR/YaroslavCalculator.apk"
+  SIGNED_APK="$APK_DIR/yaroslav-calculator.apk"
   "$APKSIGNER" sign --ks "$KEYSTORE" --ks-pass pass:"$STOREPASS" --key-pass pass:"$KEYPASS" --v2-signing-enabled true --out "$SIGNED_APK" "$ALIGNED_APK"
   "$APKSIGNER" verify -v "$SIGNED_APK"
   rm -f "$ALIGNED_APK"

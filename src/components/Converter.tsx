@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ConverterType } from '../types';
 import { CustomSelect } from './CustomSelect';
+import { toSingularUnit } from '../utils/units';
 
 interface ConverterProps {
   t: any;
@@ -155,12 +156,15 @@ export const Converter: React.FC<ConverterProps> = (props) => {
         <div className="conversion-result">
           <h3>{t.result}:</h3>
           <p>
-            {convertValue} {getUnitName(fromUnit)} ={' '}
-            <strong>{convertResult}</strong> {getUnitName(toUnit)}
+            {convertValue}{' '}
+            {parseFloat(convertValue) === 1
+              ? toSingularUnit(getUnitName(fromUnit), t.language)
+              : getUnitName(fromUnit)}{' '}
+            = <strong>{convertResult}</strong> {getUnitName(toUnit)}
           </p>
-          {unitRate !== null && (
+          {unitRate !== null && parseFloat(convertValue) !== 1 && (
             <p className="exchange-rate">
-              {t.exchangeRate}: 1 {getUnitName(fromUnit)} = {unitRate}{' '}
+              1 {toSingularUnit(getUnitName(fromUnit), t.language)} = {unitRate}{' '}
               {getUnitName(toUnit)}
             </p>
           )}
