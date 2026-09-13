@@ -1,4 +1,4 @@
-package com.yarikstudio.smartcalc
+package com.yarikstudio.yaroslav-calculator
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

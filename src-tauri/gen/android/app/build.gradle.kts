@@ -15,10 +15,10 @@ val tauriProperties = Properties().apply {
 
 android {
     compileSdk = 36
-    namespace = "com.yarikstudio.smartcalc"
+    namespace = "com.yarikstudio.yaroslav-calculator"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "com.yarikstudio.smartcalc"
+        applicationId = "com.yarikstudio.yaroslav-calculator"
         minSdk = 24
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()

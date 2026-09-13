@@ -6,9 +6,9 @@ echo "🚀 Building Yaroslav Calculator APK..."
 PROJECT_DIR="/Users/Yaroslav/Documents/Programming/Apps/yaroslav-calculator"
 APK_DIR="$PROJECT_DIR/downloads"
 KEYSTORE="$PROJECT_DIR/apk/keystore.jks"
-STOREPASS="smartcalc123"
-KEYPASS="smartcalc123"
-ALIAS="smartcalc"
+STOREPASS="yaroslav-calculator123"
+KEYPASS="yaroslav-calculator123"
+ALIAS="yaroslav-calculator"
 ZIPALIGN=$(find /Users/Yaroslav/Library/Android/sdk/build-tools -name "zipalign" -type f | sort -V | tail -1)
 APKSIGNER=$(find /Users/Yaroslav/Library/Android/sdk/build-tools -name "apksigner" -type f | sort -V | tail -1)
 
