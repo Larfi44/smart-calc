@@ -1,4 +1,4 @@
-name: Deploy to GitVerse Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -24,16 +24,10 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build:pages
+        run: npm run build
 
-      - name: Deploy to pages/main
-        run: |
-          git config --global user.name "gitverse-actions"
-          git config --global user.email "gitverse-actions@gitverse.local"
-          git checkout --orphan pages/main
-          git rm -rf .
-          cp -r out/* .
-          echo "out" >> .gitignore
-          git add -A
-          git commit -m "Deploy $(git rev-parse --short HEAD) to pages/main" || echo "No changes"
-          git push -f origin pages/main
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+          branch: gh-pages
