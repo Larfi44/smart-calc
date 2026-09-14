@@ -19,7 +19,7 @@ export const useTimer = (t: any) => {
     const date2 = new Date(eventDate2).getTime();
     const diff = Math.abs(date2 - date1);
     setTimeDifference(formatDiff(diff));
-  }, [eventDate1, eventDate2, t]);
+  }, [eventDate1, eventDate2, t, formatDiff]);
 
   const setEventDate1Clear = (date: string) => {
     setEventDate1(date);

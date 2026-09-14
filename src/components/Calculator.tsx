@@ -87,7 +87,7 @@ export const Calculator: React.FC<CalculatorProps> = ({
           </span>
         );
       }
-      const partial = part.match(/^(-?\d+\.?\d*)[\/÷]$/);
+      const partial = part.match(/^(-?\d+\.?\d*)[/÷]$/);
       if (partial) {
         return (
           <span key={i} className="fraction">

@@ -1007,7 +1007,7 @@ export const useCalculator = (t: any) => {
         setJustEvaluated(true);
       }
     },
-    [history, formatDisplayNumber, t, rootPending],
+    [t, rootPending],
   );
 
   return {
