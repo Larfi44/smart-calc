@@ -861,7 +861,7 @@ export const useCalculator = (t: any) => {
       setDisplay(t.error);
       setJustEvaluated(true);
     }
-  }, [history, formatDisplayNumber, t, rootPending, tempValue, calcType]);
+  }, [t, rootPending, tempValue, calcType, updateDisplay]);
 
   const handleFunction = useCallback(
     (func: string) => {

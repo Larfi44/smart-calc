@@ -77,7 +77,7 @@ export const Calculator: React.FC<CalculatorProps> = ({
     return parts.map((part, i) => {
       if (part == null) return null;
       if (part.trim() !== part) return <span key={i}>{part}</span>;
-      const fraction = part.match(/^(-?\d+\.?\d*)[\/÷](-?\d+\.?\d*)$/);
+      const fraction = part.match(/^(-?\d+\.?\d*)[/÷](-?\d+\.?\d*)$/);
       if (fraction) {
         return (
           <span key={i} className="fraction">
