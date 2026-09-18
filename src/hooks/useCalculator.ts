@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { CalculatorType, NumberBase, HistoryItem } from '../types';
 import { formatDecimal, roundFloat } from '../utils/format';
+import { safeEvaluate } from '../utils/safeEvaluate';
 
 export const useCalculator = (t: any) => {
   const [calcType, setCalcType] = useState<CalculatorType>('normal');
@@ -73,40 +74,43 @@ export const useCalculator = (t: any) => {
   }, [history]);
 
   // Convert a decimal result to a simplified fraction (continued fractions)
-  const decimalToFraction = (value: number): string => {
-    if (!isFinite(value)) {
-      if (isNaN(value)) return t.error;
-      return value > 0 ? t.infinity : '-' + t.infinity;
-    }
-    if (Number.isInteger(value)) return value.toString();
-    const sign = value < 0 ? '-' : '';
-    const x = Math.abs(value);
-    let h1 = 1;
-    let h2 = 0;
-    let k1 = 0;
-    let k2 = 1;
-    let b = x;
-    for (let i = 0; i < 64; i++) {
-      const a = Math.floor(b);
-      const h = a * h1 + h2;
-      const k = a * k1 + k2;
-      if (k > 10000) break;
-      if (Math.abs(x - h / k) < 1e-10) {
-        h1 = h;
-        k1 = k;
-        break;
+  const decimalToFraction = useCallback(
+    (value: number): string => {
+      if (!isFinite(value)) {
+        if (isNaN(value)) return t.error;
+        return value > 0 ? t.infinity : '-' + t.infinity;
       }
-      h2 = h1;
-      h1 = h;
-      k2 = k1;
-      k1 = k;
-      const frac = b - a;
-      if (frac < 1e-12) break;
-      b = 1 / frac;
-    }
-    if (k1 === 1) return sign + h1;
-    return `${sign}${h1}/${k1}`;
-  };
+      if (Number.isInteger(value)) return value.toString();
+      const sign = value < 0 ? '-' : '';
+      const x = Math.abs(value);
+      let h1 = 1;
+      let h2 = 0;
+      let k1 = 0;
+      let k2 = 1;
+      let b = x;
+      for (let i = 0; i < 64; i++) {
+        const a = Math.floor(b);
+        const h = a * h1 + h2;
+        const k = a * k1 + k2;
+        if (k > 10000) break;
+        if (Math.abs(x - h / k) < 1e-10) {
+          h1 = h;
+          k1 = k;
+          break;
+        }
+        h2 = h1;
+        h1 = h;
+        k2 = k1;
+        k1 = k;
+        const frac = b - a;
+        if (frac < 1e-12) break;
+        b = 1 / frac;
+      }
+      if (k1 === 1) return sign + h1;
+      return `${sign}${h1}/${k1}`;
+    },
+    [t],
+  );
 
   const formatDisplayNumber = useCallback(
     (num: number | string): string => {
@@ -121,7 +125,7 @@ export const useCalculator = (t: any) => {
       if (calcType === 'fractions') return decimalToFraction(rounded);
       return formatDecimal(rounded);
     },
-    [t, calcType],
+    [t, calcType, decimalToFraction],
   );
 
   const formatNumberInBase = useCallback(
@@ -250,9 +254,7 @@ export const useCalculator = (t: any) => {
         if (!trimmed) return;
         if (/[\d)]$/.test(trimmed)) {
           updateDisplay(trimmed + '/');
-        } else if (
-          /(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/.test(trimmed)
-        ) {
+        } else if (/(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/.test(trimmed)) {
           updateDisplay(
             trimmed
               .replace(/(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/, '')
@@ -287,7 +289,9 @@ export const useCalculator = (t: any) => {
       }
 
       const trimmed = displayRef.current.trimEnd();
-      const endsWithAnyOp = /(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/.test(trimmed);
+      const endsWithAnyOp = /(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/.test(
+        trimmed,
+      );
 
       if (
         op === 'AND' ||
@@ -337,7 +341,9 @@ export const useCalculator = (t: any) => {
 
       if (endsWithAnyOp) {
         updateDisplay(
-          trimmed.replace(/(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/, '').trimEnd() +
+          trimmed
+            .replace(/(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/, '')
+            .trimEnd() +
             ' ' +
             op +
             ' ',
@@ -395,10 +401,7 @@ export const useCalculator = (t: any) => {
     const operandStr = lastOp ? lastOp.operandStr : currentDisplay;
     const prefix = lastOp ? lastOp.prefix : '';
 
-    if (
-      !/^-?\d+\.?\d*$/.test(operandStr) &&
-      !/^\(.*\)$/.test(operandStr)
-    )
+    if (!/^-?\d+\.?\d*$/.test(operandStr) && !/^\(.*\)$/.test(operandStr))
       return;
 
     rootPrefixRef.current = prefix;
@@ -501,8 +504,7 @@ export const useCalculator = (t: any) => {
   }, [rootPending, tempValue, t, updateDisplay]);
 
   const evaluateExpression = (expr: string): number => {
-    // Helper for factorial that can be used inside eval
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // Helper for factorial, passed into the generated evaluator function
     const _fact = (n: number): number => {
       if (n < 0) return NaN;
       if (n === 0 || n === 1) return 1;
@@ -706,15 +708,25 @@ export const useCalculator = (t: any) => {
       .replace(/atg\((\d+\.?\d*)°\)/g, '(Math.atan($1)*180/Math.PI)')
       .replace(/actg\((\d+\.?\d*)°\)/g, '(Math.atan(1/$1)*180/Math.PI)')
       .replace(/\^/g, '**')
-      .replace(/(^|\D)(1\/(\d+\.?\d*))/g, (m, pre, frac, num) => `${pre}(${frac})`);
+      .replace(
+        /(^|\D)(1\/(\d+\.?\d*))/g,
+        (m, pre, frac, num) => `${pre}(${frac})`,
+      );
 
     // Parenthesized operands for postfix operators: ")²", ")%"
     evalExpr = expandPostfixParen(evalExpr, '%', (inner) => `((${inner})/100)`);
-    evalExpr = expandPostfixParen(evalExpr, '²', (inner) => `Math.pow((${inner}),2)`);
+    evalExpr = expandPostfixParen(
+      evalExpr,
+      '²',
+      (inner) => `Math.pow((${inner}),2)`,
+    );
     // Functions applied to parenthesized operands: √(...), [n]√(...), sin(...°), ...
     evalExpr = expandParenFunctions(evalExpr);
 
-    return eval(evalExpr);
+    // Evaluate safely with a whitelist-based parser instead of eval().
+    // "Math." prefixes are stripped — all functions/constants are whitelisted
+    // inside safeEvaluate (plus the local factorial helper).
+    return safeEvaluate(evalExpr.replace(/Math\./g, ''), { _fact });
   };
 
   const handleEqual = useCallback(() => {
@@ -735,7 +747,8 @@ export const useCalculator = (t: any) => {
 
       const trimmedDisplay = currentDisplay.trim();
       if (!trimmedDisplay || trimmedDisplay === '0') return;
-      if (/(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/.test(trimmedDisplay)) return;
+      if (/(?:XOR|AND|OR|mod|%of|<<|>>|[+\-×÷/^])\s*$/.test(trimmedDisplay))
+        return;
 
       if (trimmedDisplay.includes(' %of ')) {
         const [a, b] = trimmedDisplay
@@ -861,7 +874,7 @@ export const useCalculator = (t: any) => {
       setDisplay(t.error);
       setJustEvaluated(true);
     }
-  }, [t, rootPending, tempValue, calcType, updateDisplay]);
+  }, [t, rootPending, tempValue, updateDisplay, formatDisplayNumber, history]);
 
   const handleFunction = useCallback(
     (func: string) => {

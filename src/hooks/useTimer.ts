@@ -5,13 +5,18 @@ export const useTimer = (t: any) => {
   const [eventDate2, setEventDate2] = useState('');
   const [timeDifference, setTimeDifference] = useState<string | null>(null);
 
-  const formatDiff = (diff: number): string => {
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    return `${days}${t.daysShort} ${hours}${t.hoursShort} ${minutes}${t.minutesShort} ${seconds}${t.secondsShort}`;
-  };
+  const formatDiff = useCallback(
+    (diff: number): string => {
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      return `${days}${t.daysShort} ${hours}${t.hoursShort} ${minutes}${t.minutesShort} ${seconds}${t.secondsShort}`;
+    },
+    [t],
+  );
 
   const calculateTimeDifference = useCallback(() => {
     if (!eventDate1 || !eventDate2) return;
@@ -19,7 +24,7 @@ export const useTimer = (t: any) => {
     const date2 = new Date(eventDate2).getTime();
     const diff = Math.abs(date2 - date1);
     setTimeDifference(formatDiff(diff));
-  }, [eventDate1, eventDate2, t, formatDiff]);
+  }, [eventDate1, eventDate2, formatDiff]);
 
   const setEventDate1Clear = (date: string) => {
     setEventDate1(date);
