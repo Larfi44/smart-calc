@@ -26,7 +26,7 @@ fi
 echo "🧹 Cleaning old build..."
 rm -rf build
 
-echo "📦 Building React app..."
+echo "📦 Building web assets..."
 npm run build
 
 echo "🤖 Building Android APK..."
